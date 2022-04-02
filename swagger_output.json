@@ -5,7 +5,7 @@
     "title": "ZkPad API",
     "description": "API for ZkPad"
   },
-  "host": "zkpad-rest-api.herokuapp.com",
+  "host": "zkpad-api.herokuapp.com",
   "basePath": "/",
   "schemes": [
     "https"

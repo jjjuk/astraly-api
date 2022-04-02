@@ -6,7 +6,7 @@ const doc = {
 		title: "ZkPad API", // by default: 'REST API'
 		description: "API for ZkPad", // by default: ''
 	},
-	host: "zkpad-rest-api.herokuapp.com", // by default: 'localhost:3000'
+	host: "zkpad-api.herokuapp.com", // by default: 'localhost:3000'
 	schemes: ["https"],
 };
 
