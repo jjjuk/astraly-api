@@ -15,6 +15,8 @@ const morganMiddleware = require("./apis/middleware/morgan");
 require("./models/abi");
 require("./models/account");
 require("./models/contact");
+require("./models/ido");
+require("./models/quest");
 
 const connect = () => {
 	const uri = process.env.DB_URL;

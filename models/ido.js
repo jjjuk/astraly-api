@@ -1,10 +1,5 @@
 const mongoose = require("mongoose");
 
-interface Round {
-	startDate: Date;
-	endDate: Date;
-}
-
 const IDO = mongoose.Schema(
 	{
 		name: { type: String },
