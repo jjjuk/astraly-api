@@ -15,6 +15,12 @@ const Account = mongoose.Schema(
 		imageHash: { type: String },
 		bannerHash: { type: String },
 		nonce: { type: Number, default: 0 },
+		questsCompleted: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Quest",
+			},
+		],
 	},
 	{
 		timestamps: true,
@@ -30,6 +36,7 @@ Account.methods.toAccountJSON = function () {
 		bio: this.bio,
 		imageHash: this.imageHash,
 		bannerHash: this.bannerHash,
+		questsCompleted: this.questsCompleted,
 	};
 };
 

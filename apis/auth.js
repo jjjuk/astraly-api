@@ -7,29 +7,30 @@ const mongoose = require("mongoose");
 const Account = mongoose.model("Account");
 const toLowerCase = require("../utils/utils");
 const Logger = require("../services/logger");
+const starknet = require("starknet");
 
 router.post("/getToken", async (req, res) => {
 	let address = req.body.address;
-	let isAddress = ethers.utils.isAddress(address);
-	if (!isAddress)
+	let parsed_address = starknet.validateAndParseAddress(address);
+	if (!parsed_address)
 		return res.json({
 			status: "failed",
 			token: "",
 		});
-	address = toLowerCase(address);
+	parsed_address = toLowerCase(parsed_address);
 	// save a new account if not registered
-	let account = await Account.findOne({ address: address });
+	let account = await Account.findOne({ address: parsed_address });
 	if (!account) {
 		try {
 			let newAccount = new Account();
-			newAccount.address = address;
+			newAccount.address = parsed_address;
 			await newAccount.save();
 		} catch (error) {}
 	}
 
 	let token = jwt.sign(
 		{
-			data: address,
+			data: parsed_address,
 		},
 		jwt_secret,
 		{ expiresIn: "24h" }
