@@ -17,6 +17,7 @@ require("./models/account");
 require("./models/contact");
 require("./models/ido");
 require("./models/quest");
+require("./models/questHistory");
 
 const connect = () => {
 	const uri = process.env.DB_URL;

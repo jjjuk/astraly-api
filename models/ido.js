@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
+const { number } = require("starknet");
 
 const IDO = mongoose.Schema(
 	{
+		id: { type: Number },
 		name: { type: String },
 		description: { type: String },
 		ticker: { type: String },

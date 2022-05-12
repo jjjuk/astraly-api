@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Quest = mongoose.Schema(
 	{
-		idoId: { type: mongoose.Schema.Types.ObjectId, ref: "IDO", required: true },
+		idoId: { type: Number, required: true },
 		name: { type: String },
 		description: { type: String },
 	},
@@ -13,7 +13,11 @@ const Quest = mongoose.Schema(
 
 //*** --- function for response JSON for record list request
 Quest.methods.toQuestJSON = function () {
-	return {};
+	return {
+		idoId: this.idoId,
+		name: this.name,
+		description: this.description,
+	};
 };
 
 mongoose.model("Quest", Quest);

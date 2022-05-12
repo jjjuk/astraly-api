@@ -58,6 +58,8 @@
 	},
 	"devDependencies": {
 		"base-path-converter": "^1.0.2",
+		"keccak256": "^1.0.6",
+		"merkletreejs": "^0.2.31",
 		"nodemon": "^2.0.12"
 	},
 	"engines": {
