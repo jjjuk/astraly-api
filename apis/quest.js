@@ -21,6 +21,13 @@ router.post("/onQuestCompleted", auth, async (req, res) => {
 
 	let quest = await Quest.findOne({ _id: questId });
 	if (quest) {
+		if (questId in account.questsCompleted) {
+			return res.json({
+				status: "failed",
+				data: "Quest already completed",
+			});
+		}
+
 		account.questsCompleted.append(questId);
 		await account.save();
 
