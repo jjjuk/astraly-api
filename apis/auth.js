@@ -5,7 +5,7 @@ const router = require("express").Router();
 const ethers = require("ethers");
 const mongoose = require("mongoose");
 const Account = mongoose.model("Account");
-const toLowerCase = require("../utils/utils");
+const { toLowerCase } = require("../utils/utils");
 const Logger = require("../services/logger");
 const starknet = require("starknet");
 

@@ -9,6 +9,7 @@ const QuestHistory = mongoose.model("QuestHistory");
 const Account = mongoose.model("Account");
 
 const fs = require("fs");
+const auth = require("./middleware/auth");
 
 router.post("/onQuestCompleted", auth, async (req, res) => {
 	let address = extractAddress(req);
@@ -59,8 +60,10 @@ router.post("/getMerkleProof", auth, async (req, res) => {
 			data: "No account found for this address",
 		});
 
-	const proofs = fs.readFileSync(`scripts/data/proofs_${idoID}.json`);
-
+	const proofs = JSON.parse(
+		fs.readFileSync(`scripts/data/proofs_${idoID}.json`),
+		"utf-8"
+	);
 	const proof = proofs[address];
 
 	if (!proof)

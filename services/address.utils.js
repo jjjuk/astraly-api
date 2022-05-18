@@ -2,7 +2,7 @@ require("dotenv").config();
 const ethers = require("ethers");
 const jwt = require("jsonwebtoken");
 const jwt_secret = process.env.JWT_SECRET;
-const toLowerCase = require("../utils/utils");
+const { toLowerCase } = require("../utils/utils");
 const starknet = require("starknet");
 
 const extractAddress = (req, res) => {
