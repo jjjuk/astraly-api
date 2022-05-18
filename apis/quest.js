@@ -8,6 +8,8 @@ const Quest = mongoose.model("Quest");
 const QuestHistory = mongoose.model("QuestHistory");
 const Account = mongoose.model("Account");
 
+const fs = require("fs");
+
 router.post("/onQuestCompleted", auth, async (req, res) => {
 	let address = extractAddress(req);
 	let questId = req.body.questId;
@@ -43,6 +45,33 @@ router.post("/onQuestCompleted", auth, async (req, res) => {
 	return res.json({
 		status: "success",
 		data: quest,
+	});
+});
+
+router.post("/getMerkleProof", auth, async (req, res) => {
+	let address = extractAddress(req);
+	let idoID = req.body.idoID;
+	let account = await Account.findOne({ address: address });
+
+	if (!account)
+		return res.json({
+			status: "failed",
+			data: "No account found for this address",
+		});
+
+	const proofs = fs.readFileSync(`scripts/data/proofs_${idoID}.json`);
+
+	const proof = proofs[address];
+
+	if (!proof)
+		return res.json({
+			status: "failed",
+			error: "No proof found for this address",
+		});
+
+	return res.json({
+		status: "success",
+		data: proof,
 	});
 });
 
