@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedParameters": true,
+    "target": "ES2019",
+    "experimentalDecorators": true,
+    "lib": [
+      "ESNext"
+    ],
+    "strict": false,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

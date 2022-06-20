@@ -1,0 +1,10 @@
+static
+dist
+.idea
+data
+.env
+.env.local
+node_modules
+dist
+build
+jest.config.ts
