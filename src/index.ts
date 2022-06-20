@@ -55,7 +55,7 @@ const startServer = async (): Promise<void> => {
     },
   })
 
-  app.listen({ port: globals.PORT, host: globals.HOST }, () => {
+  app.listen({ port: globals.PORT }, () => {
     Logger.info(`🚀 Server ready at http://${globals.HOST}:${globals.PORT}${server.graphqlPath}, ${globals.API_URL}`)
   })
 
