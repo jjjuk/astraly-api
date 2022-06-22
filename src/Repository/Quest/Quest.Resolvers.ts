@@ -18,7 +18,6 @@ export class QuestResolvers {
       throw new Error('account not found')
     }
 
-
     const quest = await QuestModel.findById(questId).exec()
 
     if (!quest) {
@@ -40,7 +39,7 @@ export class QuestResolvers {
   }
 
   @Authorized()
-  @Query(() => String)
+  @Query(() => [String])
   async getMerkleProof(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<string> {
     const account = await AccountModel.findOne({
       address,
@@ -50,11 +49,11 @@ export class QuestResolvers {
       throw new Error('account not found')
     }
 
-   const merkeProofs = await MerkleProofsModel.findOne({
-     idoId: Number(idoId),
-   }).exec()
-
-    const proof = merkeProofs.data[address]
+    const merkleProofs = await MerkleProofsModel.findOne({
+      idoId: Number(idoId),
+    }).exec()
+    console.log(merkleProofs, address)
+    const proof = merkleProofs.data[address]
 
     if (!proof) {
       throw new Error('no proof found for address')
