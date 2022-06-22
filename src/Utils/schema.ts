@@ -3,7 +3,7 @@ import { GraphQLSchema } from 'graphql'
 import { AccountResolvers } from '../Repository/Account/Account.Resolvers'
 import { appAuthChecker } from '../Modules/Auth/AuthChecker'
 import { AuthResolvers } from '../Modules/Auth/AuthResolvers'
-import { QuestResolvers } from '../Repository/Quest/Quest.Resolovers'
+import { QuestResolvers } from '../Repository/Quest/Quest.Resolvers'
 import { ContactResolvers } from '../Repository/Contact/Contact.Resolvers'
 import path from 'path'
 
