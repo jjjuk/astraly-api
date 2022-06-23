@@ -4,6 +4,7 @@ import { AppContext } from '../../Utils/Types/context'
 import { AccountModel } from '../Account/Account.Entity'
 import { QuestHistoryModel } from './QuestHistory.Entity'
 import { MerkleProofsModel } from './MerkleProofs.Entity'
+import { validateAndParseAddress } from 'starknet'
 
 @Resolver()
 export class QuestResolvers {
@@ -56,7 +57,7 @@ export class QuestResolvers {
     const merkleProofs = await MerkleProofsModel.findOne({
       idoId: Number(idoId),
     }).exec()
-    const proof = merkleProofs.data[address]
+    const proof = merkleProofs.data[validateAndParseAddress(address)]
 
     if (!proof) {
       throw new Error('no proof found for address')
