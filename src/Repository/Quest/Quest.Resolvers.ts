@@ -1,31 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Quest, QuestModel } from './Quest.Entity'
 import { AppContext } from '../../Utils/Types/context'
 import { AccountModel } from '../Account/Account.Entity'
 import { QuestHistoryModel } from './QuestHistory.Entity'
-// import { MerkleProofsModel } from './MerkleProofs.Entity'
-// import { hash } from 'starknet'
-
-/**
- * Generate Merkle Tree leaf from address and value
- * @param {string} address of airdrop claimee
- * @param {string} value of airdrop tokens to claimee
- * @returns {Buffer} Merkle Tree node
- */
-// function generateLeaf(address: string, value: string): Buffer {
-//   return Buffer.from(
-//     // Hash in appropriate Merkle format
-//     hash.pedersen([address, value]).slice(2),
-//     'hex'
-//   )
-// }
-
-// const merkleTree = new MerkleTree(
-//   tree.tree.leaves.map((l) => Buffer.from(l.data)),
-//   hash.computeHashOnElements,
-//   { sortPairs: true }
-// )
+import { MerkleProofsModel } from './MerkleProofs.Entity'
 
 @Resolver()
 export class QuestResolvers {
@@ -60,25 +38,26 @@ export class QuestResolvers {
     return quest
   }
 
-  // @Authorized()
-  // @Query(() => [String])
-  // async getMerkleProof(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<string[]> {
-  //   const account = await AccountModel.findOne({
-  //     address,
-  //   }).exec()
+  @Authorized()
+  @Query(() => [String])
+  async getMerkleProof(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<string> {
+    const account = await AccountModel.findOne({
+      address,
+    }).exec()
 
-  //   if (!account) {
-  //     throw new Error('account not found')
-  //   }
-  //   console.log(idoId)
-  //   const value = airdrop[address]
-  //   const leaf = generateLeaf(address, value)
-  //   const proof = merkleTree.getHexProof(leaf)
+    if (!account) {
+      throw new Error('account not found')
+    }
 
-  //   if (!proof) {
-  //     throw new Error('no proof found for address')
-  //   }
+    // const merkleProofs = await MerkleProofsModel.findOne({
+    //   idoId: Number(idoId),
+    // }).exec()
+    // const proof = merkleProofs.data[address]
 
-  //   return proof
-  // }
+    if (!proof) {
+      throw new Error('no proof found for address')
+    }
+
+    return proof
+  }
 }
