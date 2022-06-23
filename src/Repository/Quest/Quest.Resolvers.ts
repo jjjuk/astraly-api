@@ -18,6 +18,10 @@ export class QuestResolvers {
       throw new Error('account not found')
     }
 
+    if (account.questCompleted.map((x) => String(x)).includes(questId)) {
+      throw new Error('quest already completed')
+    }
+
     const quest = await QuestModel.findById(questId).exec()
 
     if (!quest) {
