@@ -13,7 +13,7 @@ import { globals } from './Utils/Globals'
 // import { initCheckpoint } from './Utils/Checkpoint'
 import { connectToDb } from './Utils/Db'
 import { initGlobals } from './Utils/Globals/init'
-import { generateQuestsData } from './Utils/Seed/generateQuestsData'
+// import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 
 initGlobals()
 
@@ -28,7 +28,7 @@ app.use(
 
 const startServer = async (): Promise<void> => {
   await connectToDb(globals.DB_HOST, globals.DB_NAME)
-  await generateQuestsData()
+  // await generateQuestsData()
 
   const schema = await buildSchema()
   const server = new ApolloServer({
