@@ -22,7 +22,6 @@ type Mutation {
 
 type Query {
   getAccount(address: String!): Account!
-  getMerkleProof(idoId: String!): [String!]!
   getToken(address: String!): String!
   hello: String!
   me: Account!
