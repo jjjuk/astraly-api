@@ -1,39 +1,53 @@
-import { generate_merkle_proof, getLeaves } from './utils'
+import { generate_merkle_proof, getLeaves, generate_merkle_root } from './utils'
 import { MerkleProofsModel } from '../../Repository/Quest/MerkleProofs.Entity'
+import { AccountModel } from '../../Repository/Account/Account.Entity'
+import { QuestHistoryModel } from '../../Repository/Quest/QuestHistory.Entity'
+import { writeFileSync } from 'fs'
 
-const IDO_ID = 0;
+const IDO_ID = 3
 export const generateQuestsData = async (): Promise<void> => {
+  const _accounts = await AccountModel.find({})
 
-    const recipients = [
-        "0x02b9ccdbe802fba1109ff59ee13bff0a53960853fa1d4f1a114d093cd660fe24",
-        "0x04645ea2500032db6954ba40aca638aec94f8c1713ebb8002a6bcd0583942228",
-    ];
+  const recipients = []
+  const amounts = []
+  console.log('generating...')
+  for (const account of _accounts) {
+    const _address = account.address
+    const _nbQuest = await QuestHistoryModel.countDocuments({
+      idoId: IDO_ID,
+      address: _address,
+    })
+    recipients.push(_address)
+    amounts.push(_nbQuest)
+  }
 
-    const amounts = [5, 2];
+  const leaves = getLeaves(recipients, amounts).map((l) => l[0])
+  const root = generate_merkle_root(leaves)
+  console.log('ROOT : ', root)
+  writeFileSync(`leaves_${IDO_ID}.json`, JSON.stringify(leaves), { flag: 'a+' })
+  writeFileSync(`recipients_${IDO_ID}.json`, JSON.stringify(recipients), { flag: 'a+' })
 
-    const leaves = getLeaves(recipients, amounts).map((l) => l[0]);
-    // const root = generate_merkle_root(leaves)
+  const addressProofMap = Object.fromEntries(
+    recipients.map((addr, index) => {
+      return [addr, generate_merkle_proof(leaves, index)]
+    })
+  )
 
-    const addressProofMap = Object.fromEntries(
-        recipients.map((addr, index) => [
-            addr,
-            generate_merkle_proof(leaves, index),
-        ])
-    );
+  writeFileSync(`proofs_${IDO_ID}.json`, JSON.stringify(addressProofMap), { flag: 'a+' })
+  const merkleProof = await MerkleProofsModel.findOne({
+    idoId: IDO_ID,
+    data: addressProofMap,
+  }).exec()
 
-    const merkleProof = await MerkleProofsModel.findOne({
-        idoId: IDO_ID,
-        data: addressProofMap
-    }).exec()
-
-    if (!merkleProof) {
-        await MerkleProofsModel.create({
-            idoId: IDO_ID,
-            data: addressProofMap
-        })
-    } else {
-        await MerkleProofsModel.findByIdAndUpdate(merkleProof, {
-            $set: { data: addressProofMap}
-        })
-    }
+  if (!merkleProof) {
+    console.log('creating...')
+    await MerkleProofsModel.create({
+      idoId: IDO_ID,
+      data: addressProofMap,
+    })
+  } else {
+    await MerkleProofsModel.findByIdAndUpdate(merkleProof, {
+      $set: { data: addressProofMap },
+    })
+  }
 }

@@ -49,11 +49,10 @@ export class QuestResolvers {
       throw new Error('account not found')
     }
 
-    const merkleProofs = await MerkleProofsModel.findOne({
-      idoId: Number(idoId),
-    }).exec()
-    console.log(merkleProofs, address)
-    const proof = merkleProofs.data[address]
+    // const merkleProofs = await MerkleProofsModel.findOne({
+    //   idoId: Number(idoId),
+    // }).exec()
+    // const proof = merkleProofs.data[address]
 
     if (!proof) {
       throw new Error('no proof found for address')
