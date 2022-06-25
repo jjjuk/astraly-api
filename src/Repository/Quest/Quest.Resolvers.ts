@@ -4,6 +4,7 @@ import { AppContext } from '../../Utils/Types/context'
 import { AccountModel } from '../Account/Account.Entity'
 import { QuestHistoryModel } from './QuestHistory.Entity'
 import { MerkleProofsModel } from './MerkleProofs.Entity'
+// import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { validateAndParseAddress } from 'starknet'
 
 @Resolver()
@@ -45,7 +46,7 @@ export class QuestResolvers {
 
   @Authorized()
   @Query(() => [String])
-  async getMerkleProof(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<string> {
+  async getMerkleProof(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<string[]> {
     const account = await AccountModel.findOne({
       address,
     }).exec()

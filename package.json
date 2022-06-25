@@ -1,20 +1,22 @@
 {
-  "name": "zkpad-api",
+  "name": "astraly-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsc-watch --onsuccess \"npx ts-node src/index.ts\"",
+    "dev": "tsc-watch --onsuccess \"node dist/index.js\"",
     "swagger-autogen": "node swagger.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ./src",
     "prettier": "prettier .",
-    "prettier:fix": "prettier --write ./src"
+    "prettier:fix": "prettier --write ./src",
+    "generateQuests": "tsc && node dist/index.js generateQuests",
+    "generateProjects": "tsc && node dist/index.js generateProjects"
   },
   "keywords": [],
-  "author": "ZkPad",
+  "author": "Astraly",
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^3.3.0",

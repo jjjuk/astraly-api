@@ -1,7 +1,37 @@
-import { Field, ID } from 'type-graphql'
+import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { getModelForClass, prop } from '@typegoose/typegoose'
 
+@ObjectType()
+export class Round {
+  @Field({ nullable: true })
+  @prop()
+  title: string
+
+  @Field({ nullable: true })
+  @prop()
+  description: string
+
+  @Field({ nullable: true })
+  @prop()
+  startDate: Date
+
+  @Field({ nullable: true })
+  @prop()
+  endDate: Date
+}
+
+export enum ProjectType {
+  IDO = 'IDO',
+  LBP = 'LBP',
+  GDA = 'GDA',
+}
+
+registerEnumType(ProjectType, {
+  name: 'ProjectType',
+})
+
+@ObjectType()
 export class Project {
   @Field(() => ID)
   readonly _id!: ObjectId
@@ -68,7 +98,59 @@ export class Project {
 
   @Field({ nullable: true })
   @prop()
+  name: string
+
+  @Field({ nullable: true })
+  @prop()
+  description: string
+
+  @Field(() => ProjectType, { nullable: true })
+  @prop({ enum: ProjectType, type: String })
+  type?: ProjectType
+
+  @Field({ nullable: true })
+  @prop()
   tx!: string
+
+  @Field({ nullable: true })
+  @prop()
+  ticker?: string
+
+  @Field({ nullable: true })
+  @prop()
+  logo?: string
+
+  @Field({ nullable: true })
+  @prop()
+  cover?: string
+
+  @Field({ nullable: true })
+  @prop()
+  totalRaise?: number
+
+  @Field({ nullable: true })
+  @prop()
+  tokenPrice?: number
+
+  @Field({ nullable: true })
+  @prop()
+  maxAllocation?: number
+
+  @Field({ nullable: true })
+  @prop({})
+  currentRoundIndex: number
+
+  @Field(() => [String], { nullable: true })
+  @prop({ type: () => [String] })
+  categories?: string[]
+
+  @Field(() => [Round], { nullable: true })
+  @prop({ type: () => [Round] })
+  rounds: Round[]
+
+  @Field({ nullable: true })
+  @prop({ default: false })
+  isFinished: boolean
 }
 
 export const ProjectModel = getModelForClass(Project, {

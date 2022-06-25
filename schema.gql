@@ -14,10 +14,77 @@ type Account {
   questCompleted: [Quest!]
 }
 
+type CallData {
+  name: String
+  type: String
+  value: Uint256
+}
+
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
+
 type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
   updateAccount(data: UpdateAccountInputType!): Account!
+  updateProject(data: ProjectInput!): Project
+}
+
+type OrganizedEvent {
+  callData: [CallData!]
+  name: String
+  transmitterContract: String
+}
+
+type Project {
+  _id: ID!
+  categories: [String!]
+  cover: String
+  created: DateTime
+  currentRoundIndex: Float
+  description: String
+  idoId: String
+  isFinished: Boolean
+  logo: String
+  maxAllocation: Float
+  name: String
+  rounds: [Round!]
+  ticker: String
+  tokenAddress: String
+  tokenPrice: Float
+  totalRaise: Float
+  tx: String
+  type: ProjectType
+  voteCount: Float
+}
+
+input ProjectInput {
+  _id: ID
+  categories: [String!]
+  cover: String
+  created: DateTime
+  currentRoundId: ID
+  description: String
+  idoId: String!
+  logo: String
+  maxAllocation: Float
+  name: String
+  rounds: [RoundInput]
+  ticker: String
+  tokenAddress: String
+  tokenPrice: Float
+  totalRaise: Float
+  tx: String
+  type: ProjectType
+  voteCount: Float
+}
+
+enum ProjectType {
+  GDA
+  IDO
+  LBP
 }
 
 type Query {
@@ -27,11 +94,46 @@ type Query {
   hello: String!
   me: Account!
   nonce: Float!
+  project(idoId: String!): Project!
+  projects: [Project!]!
+  searchProjects(finished: Boolean, search: String): [Project!]!
 }
 
 type Quest {
   _id: ID!
+  description: String
+  event: OrganizedEvent
+  icon: String
   idoId: Float
+  isClaimed: Boolean
+  link: String
+  name: String
+  type: QuestType
+}
+
+enum QuestType {
+  PRODUCT
+  SOCIAL
+}
+
+type Round {
+  description: String
+  endDate: DateTime
+  startDate: DateTime
+  title: String
+}
+
+input RoundInput {
+  _id: ID
+  description: String
+  endDate: DateTime
+  startDate: DateTime
+  title: String
+}
+
+type Uint256 {
+  high: Float
+  low: Float
 }
 
 input UpdateAccountInputType {
