@@ -3,6 +3,7 @@ import { Field, ID, ObjectType } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { Quest } from '../Quest/Quest.Entity'
 import { ModelType } from '@typegoose/typegoose/lib/types'
+import { AppFile } from '../File/File.Entity'
 
 @ObjectType()
 export class Account {
@@ -43,6 +44,13 @@ export class Account {
   @Field(() => [Quest], { nullable: true })
   @prop({ ref: 'Quest' })
   questCompleted?: Array<Ref<Quest>>
+
+  @prop({ ref: 'AppFile'})
+  cover: Ref<AppFile>
+
+  @Field({ nullable: true })
+  @prop()
+  avatar: string
 }
 
 export const AccountModel: ModelType<Account> = getModelForClass(Account, {

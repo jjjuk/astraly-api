@@ -7,12 +7,27 @@ import { QuestResolvers } from '../Repository/Quest/Quest.Resolvers'
 import { ContactResolvers } from '../Repository/Contact/Contact.Resolvers'
 import path from 'path'
 import { ProjectResolvers } from '../Repository/Project/Project.Resolvers'
+import { FileResolvers } from '../Modules/Files/File.Resolvers'
+import { GraphQLJSON } from 'graphql-type-json'
+import { AccountFieldResolvers } from '../Repository/Account/Account.FieldResolvers'
 
 export const buildSchema = async (): Promise<GraphQLSchema> => {
   return await tsBuildSchema({
-    resolvers: [AuthResolvers, AccountResolvers, QuestResolvers, ContactResolvers, ProjectResolvers],
+    resolvers: [
+      AuthResolvers,
+      AccountResolvers,
+      QuestResolvers,
+      ContactResolvers,
+      ProjectResolvers,
+      FileResolvers,
+      AccountFieldResolvers,
+    ],
     validate: false,
     authChecker: appAuthChecker,
+    scalarsMap: [
+      // @ts-expect-error
+      { type: GraphQLJSON, scalar: GraphQLJSON },
+    ],
     emitSchemaFile: path.resolve(__dirname, '../../schema.gql'),
   })
 }

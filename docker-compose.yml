@@ -12,6 +12,14 @@ services:
       - MYSQL_DATABASE=checkpoint
     volumes:
       - mysql:/var/lib/mysql
+  minio:
+    image: 'docker.io/bitnami/minio:2020-debian-10'
+    ports:
+      - '9000:9000'
+    environment:
+      - MINIO_API_CORS_ALLOW_ORIGIN=*
+    volumes:
+      - ./data:/data
 volumes:
   mysql:
     driver: local

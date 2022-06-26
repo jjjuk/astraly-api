@@ -11,9 +11,9 @@ export class UpdateAccountInputType {
   @Field({ nullable: true })
   bio?: string
 
-  @Field()
-  signature!: string
+  @Field({ nullable: true })
+  cover?: string
 
-  @Field()
-  signatureAddress!: string
+  @Field({ nullable: true })
+  avatar?: string
 }
