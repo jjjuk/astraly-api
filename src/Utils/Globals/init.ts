@@ -8,7 +8,7 @@ export const initGlobals = async (): Promise<void> => {
   globals.DB_HOST = process.env.DB_HOST
   globals.DB_NAME = process.env.DB_NAME
   globals.API_URL = process.env.API_URL
-  globals.JWT_KEY = process.env.JWT_KEY
+  globals.JWT_KEY = process.env.JWT_SECRET
 
   if (process.env.S3_ENDPOINT && process.env.S3_ACCESS_KEY && process.env.S3_SECRET_KEY) {
     const spacesEndpoint = new aws.Endpoint(process.env.S3_ENDPOINT)
