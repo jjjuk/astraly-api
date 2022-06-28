@@ -10,11 +10,20 @@ export class AccountFieldResolvers {
   // TODO: add cache policy
   @FieldResolver(() => String, { nullable: true })
   async cover(@Root() account: DocumentType<Account>): Promise<string | null> {
-    if (!account.cover) {
+    return await this._fileFieldResolver(account, 'cover')
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  async avatar (@Root() account: DocumentType<Account>): Promise<string | null> {
+    return await this._fileFieldResolver(account, 'avatar')
+  }
+
+  async _fileFieldResolver (account: DocumentType<Account>, field: 'cover' | 'avatar'): Promise<string | null> {
+    if (!account[field]) {
       return null
     }
 
-    const file = await AppFileModel.findById(account.cover).exec()
+    const file = await AppFileModel.findById(account[field]).exec()
 
     if (isBefore(file.expires, new Date())) {
       file.publicUrl = await globals.s3.getSignedUrlPromise('getObject', {

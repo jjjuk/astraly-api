@@ -15,30 +15,34 @@ export class AccountResolvers {
   @Authorized()
   @Mutation(() => Account)
   async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { address }: Context): Promise<Account> {
-    // const account = AccountModel.findOne({
-    //     address
-    // }).exec()
-    //
-    // if (!account) {
-    //     console.error('how the f ?', {
-    //         address,
-    //         data
-    //     })
-    //     throw new Error('could not find account',)
-    // }
-
     const { alias: _a, ...savableData } = data
+    const account = await AccountModel.findOne({
+      address
+    }).exec()
 
-    if (savableData.cover) {
-      const file = await AppFileModel.findById(savableData.cover).exec()
+    const saveFile = async (field: 'cover' | 'avatar'): Promise<void> => {
+      if (savableData[field]) {
+        const file = await AppFileModel.findById(savableData[field]).exec()
 
-      if (!file) {
-        savableData.cover = null
+        if (!file) {
+          throw new Error(`file not found for ${field}`)
+        }
+
+        file.isUsed = true
+        await file.save()
       }
 
-      file.isUsed = true
-      await file.save()
+      if (account[field]) {
+        AppFileModel.findByIdAndUpdate(account[field], {
+          $set: {
+            isUsed: false
+          }
+        }).exec().catch(console.error)
+      }
     }
+
+    savableData.cover !== undefined && await saveFile('cover')
+    savableData.avatar !== undefined && await saveFile('avatar')
 
     return await AccountModel.findOneAndUpdate(
       {

@@ -6,6 +6,9 @@ import { QuestHistoryModel } from './QuestHistory.Entity'
 import { MerkleProofsModel } from './MerkleProofs.Entity'
 // import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { validateAndParseAddress } from 'starknet'
+import { DocumentType } from '@typegoose/typegoose'
+import { UserAccess } from '../../Modules/Auth/AuthChecker'
+import { QuestInput } from './Quest.InputTypes'
 
 @Resolver()
 export class QuestResolvers {
@@ -65,5 +68,38 @@ export class QuestResolvers {
     }
 
     return proof
+  }
+
+  @Query(() => Quest)
+  async quest (@Arg('_id') _id: string): Promise<DocumentType<Quest>> {
+    return await QuestModel.findById(_id).exec()
+  }
+
+  @Query(() => [Quest])
+  async quests (@Arg('idoId', { nullable: true }) idoId?: string): Promise<Array<DocumentType<Quest>>> {
+    if (idoId) {
+      return await QuestModel.find({
+        idoId
+      }).exec()
+    }
+
+    return await QuestModel.find({}).exec()
+  }
+
+  @Authorized([UserAccess.Admin])
+  @Mutation(() => Quest)
+  async updateQuest (@Arg('data') data: QuestInput): Promise<DocumentType<Quest>> {
+    const { _id, ...d } = data
+    if (_id) {
+      return await QuestModel.findByIdAndUpdate(_id, {
+        $set: {
+          ...d
+        }
+      })
+    }
+
+    return await QuestModel.create({
+      ...d
+    })
   }
 }

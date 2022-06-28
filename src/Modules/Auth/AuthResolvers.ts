@@ -1,8 +1,9 @@
-import { Arg, Query } from 'type-graphql'
+import { Arg, Authorized, Query } from 'type-graphql'
 import jwt from 'jsonwebtoken'
 import { createAccountByAddress } from '../../Repository/Account/AccountService'
 import { globals } from '../../Utils/Globals'
 import { getParsedAddress } from '../../Utils/Starknet'
+import { UserAccess } from './AuthChecker'
 
 export class AuthResolvers {
   @Query(() => String)
@@ -28,5 +29,14 @@ export class AuthResolvers {
       globals.JWT_KEY,
       { expiresIn: '24h' }
     )
+  }
+
+  /**
+   * Throws an error is user is not an admin
+   */
+  @Authorized([UserAccess.Admin])
+  @Query(() => Boolean)
+  isAdmin (): boolean {
+    return true
   }
 }
