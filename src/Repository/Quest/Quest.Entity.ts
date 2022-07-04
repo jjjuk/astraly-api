@@ -1,6 +1,13 @@
-import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
-import { getModelForClass, prop } from '@typegoose/typegoose'
+import { createUnionType, Field, ID, ObjectType, registerEnumType } from 'type-graphql'
+import { getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose'
 import { ObjectId } from '../../Utils/Types'
+
+@ObjectType()
+export class Felt {
+  @Field({ nullable: true })
+  @prop()
+  value: string
+}
 
 @ObjectType()
 export class Uint256 {
@@ -13,7 +20,22 @@ export class Uint256 {
   high: number
 }
 
+const CallDataValue = createUnionType({
+  name: 'CallDataValue',
+  types: () => [Felt, Uint256] as const,
+  resolveType: value => {
+    if ('value' in value) {
+      return Felt
+    }
+    if ('low' in value) {
+      return Uint256
+    }
+    return undefined
+  },
+})
+
 @ObjectType()
+@modelOptions({ options: {allowMixed: Severity.ALLOW } })
 export class CallData {
   @Field({ nullable: true })
   @prop()
@@ -23,9 +45,9 @@ export class CallData {
   @prop()
   type: string
 
-  @Field(() => Uint256, { nullable: true })
+  @Field(() => CallDataValue, { nullable: true })
   @prop()
-  value: Uint256
+  value: Uint256 | Felt
 }
 
 @ObjectType()

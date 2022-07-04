@@ -4,12 +4,15 @@ import { ObjectId } from '../../Utils/Types'
 import { QuestType } from './Quest.Entity'
 
 @InputType()
-export class Uint256Input {
+export class CallDataValueInput {
     @Field({ nullable: true })
     low: number
 
     @Field({ nullable: true })
     high: number
+
+    @Field({ nullable: true })
+    value: string
 }
 
 @InputType()
@@ -20,8 +23,8 @@ export class CallDataInput {
     @Field({ nullable: true })
     type: string
 
-    @Field(() => Uint256Input, { nullable: true })
-    value: Uint256Input
+    @Field(() => CallDataValueInput, { nullable: true })
+    value: CallDataValueInput
 }
 
 @InputType()

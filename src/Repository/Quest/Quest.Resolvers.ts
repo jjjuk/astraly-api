@@ -93,7 +93,7 @@ export class QuestResolvers {
     if (_id) {
       return await QuestModel.findByIdAndUpdate(_id, {
         $set: {
-          ...d
+          ...d,
         }
       })
     }
