@@ -12,5 +12,9 @@ export const initCheckpoint = async (): Promise<void> => {
   await checkpoint.reset()
 
   // checkpoint.seedCheckpoints(checkpoints).then(() => checkpoint.start())
-  await checkpoint.start()
+  try {
+    await checkpoint.start()
+  } catch (e) {
+    console.error(e)
+  }
 }

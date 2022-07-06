@@ -33,7 +33,7 @@ export async function handleTransferSingle({ receipt, tx, block }): Promise<void
       // const _account = await AccountModel.findOne({ address: from }).exec()
       const _tx = {
         hash: tx.transaction_hash,
-        timestamp: block.timestamp,
+        timestamp: block.timestamp * 1000,
         contractAddress: tx.contract_address,
         name: 'Burn Tickets',
         callerAddress: to,
@@ -57,7 +57,7 @@ export async function handleVaultDeposit({ receipt, tx, block }): Promise<void> 
     console.log(receiver, ethers.utils.formatUnits(assets, 'ether'), ethers.utils.formatUnits(shares, 'ether'))
     const _tx = {
       hash: tx.transaction_hash,
-      timestamp: block.timestamp,
+      timestamp: block.timestamp * 1000,
       name: 'Deposit',
       contractAddress: tx.contract_address,
       callerAddress: caller,
@@ -82,7 +82,7 @@ export async function handleVaultWithdraw({ receipt, tx, block }): Promise<void>
 
     const _tx = {
       hash: tx.transaction_hash,
-      timestamp: block.timestamp,
+      timestamp: block.timestamp * 1000,
       name: 'Withdraw',
       contractAddress: tx.contract_address,
       callerAddress: caller,
