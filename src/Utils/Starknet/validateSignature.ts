@@ -16,10 +16,8 @@ export const validateSignature = async (
     return false
   }
 
-  const { nonce } = account
-
   try {
-    const message = ethUtil.bufferToHex(Buffer.from(`Approve Signature on ZkPad with nonce ${nonce}`, 'utf8'))
+    const message = ethUtil.bufferToHex(Buffer.from(`Approve Signature on Astraly`, 'utf8'))
 
     const address = sigUtil.recoverPersonalSignature({
       data: message,

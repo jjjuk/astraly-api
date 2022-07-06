@@ -10,13 +10,13 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { buildSchema } from './Utils/schema'
 import Logger from './Utils/Logger'
 import { globals } from './Utils/Globals'
-// import { initCheckpoint } from './Utils/Checkpoint'
+import { initCheckpoint } from './Utils/Checkpoint'
 import { connectToDb } from './Utils/Db'
 import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
 
-initGlobals()
+void initGlobals()
 
 const app = new Koa()
 app.use(cors())
@@ -74,7 +74,7 @@ const startServer = async (): Promise<void> => {
 
   app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
-  // await initCheckpoint()
+  await initCheckpoint()
 }
 
 if (command === 'generateQuests') {

@@ -2,6 +2,7 @@ import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
 import { Field, ID, ObjectType } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { Quest } from '../Quest/Quest.Entity'
+import { Transaction } from '../Transaction/Transaction.Entity'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { AppFile } from '../File/File.Entity'
 
@@ -35,17 +36,19 @@ export class Account {
 
   @Field({ nullable: true })
   @prop({
-    default() {
-      Math.floor(Math.random() * 9999999)
-    },
+    default: false,
   })
-  nonce!: number
+  hasClaimedTickets?: boolean
 
   @Field(() => [Quest], { nullable: true })
   @prop({ ref: 'Quest' })
   questCompleted?: Array<Ref<Quest>>
 
-  @prop({ ref: 'AppFile'})
+  @Field(() => [Transaction], { nullable: true })
+  @prop({ ref: 'Transaction' })
+  transactions?: Array<Ref<Transaction>>
+
+  @prop({ ref: 'AppFile' })
   cover: Ref<AppFile>
 
   @Field({ nullable: true })

@@ -17,7 +17,7 @@ export class AccountResolvers {
   async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { address }: Context): Promise<Account> {
     const { alias: _a, ...savableData } = data
     const account = await AccountModel.findOne({
-      address
+      address,
     }).exec()
 
     const saveFile = async (field: 'cover' | 'avatar'): Promise<void> => {
@@ -35,14 +35,16 @@ export class AccountResolvers {
       if (account[field]) {
         AppFileModel.findByIdAndUpdate(account[field], {
           $set: {
-            isUsed: false
-          }
-        }).exec().catch(console.error)
+            isUsed: false,
+          },
+        })
+          .exec()
+          .catch(console.error)
       }
     }
 
-    savableData.cover !== undefined && await saveFile('cover')
-    savableData.avatar !== undefined && await saveFile('avatar')
+    savableData.cover !== undefined && (await saveFile('cover'))
+    savableData.avatar !== undefined && (await saveFile('avatar'))
 
     return await AccountModel.findOneAndUpdate(
       {
@@ -62,7 +64,9 @@ export class AccountResolvers {
   async me(@Ctx() { address }: Context): Promise<Account> {
     return await AccountModel.findOne({
       address,
-    }).exec()
+    })
+      .populate('transactions')
+      .exec()
   }
 
   @Query(() => Account)
@@ -81,15 +85,5 @@ export class AccountResolvers {
       alias: account.alias,
       questCompleted: account.questCompleted,
     }
-  }
-
-  @Authorized()
-  @Query(() => Number)
-  async nonce(@Ctx() { address }: Context): Promise<number> {
-    const account = await AccountModel.findOne({
-      address,
-    }).exec()
-
-    return account.nonce
   }
 }

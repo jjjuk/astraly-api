@@ -72,9 +72,9 @@ export class Project {
   // @prop()
   // totalTokensSold!: number
   //
-  // @Field({ nullable: true })
-  // @prop()
-  // totalWinningTickets!: number
+  @Field({ nullable: true })
+  @prop()
+  totalClaimedTickets!: number
   //
   // @Field({ nullable: true })
   // @prop()

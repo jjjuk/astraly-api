@@ -1,14 +1,30 @@
 {
   "network": "goerli-alpha",
+  "networkBaseUrl": "https://starknet-proxy-ikaz7.ondigitalocean.app",
   "sources": [
     {
-      "contract": "0x0625dc1290b6e936be5f1a3e963cf629326b1f4dfd5a56738dea98e1ad31b7f3",
-      "start": 112319,
-      "deploy_fn": "",
+      "contract": "0x552b530aacef8e7338c9a8f0fd4e9ad06100a67befc2f4e9246219a4e41da04",
+      "start": 260204,
+      "deploy_fn": "handleDeploy",
       "events": [
         {
-          "name": "IDO_Created",
-          "fn": "handleNewIDO"
+          "name": "TransferSingle",
+          "fn": "handleLotteryTicketMint"
+        }
+      ]
+    },
+    {
+      "contract": "0x005ef67d8c38b82ba699f206bf0db59f1828087a710bad48cc4d51a2b0da4c29",
+      "start": 260204,
+      "deploy_fn": "handleDeploy",
+      "events": [
+        {
+          "name": "Deposit",
+          "fn": "handleVaultDeposit"
+        },
+        {
+          "name": "Withdraw",
+          "fn": "handleVaultWithdraw"
         }
       ]
     }
