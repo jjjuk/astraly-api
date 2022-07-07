@@ -23,6 +23,7 @@ export class Round {
 
 export enum ProjectType {
   IDO = 'IDO',
+  INO = 'INO',
   LBP = 'LBP',
   GDA = 'GDA',
 }
@@ -44,9 +45,9 @@ export class Project {
   @prop()
   tokenAddress!: string
 
-  @Field({ nullable: true })
-  @prop({ default: 0 })
-  voteCount!: number
+  // @Field({ nullable: true })
+  // @prop({ default: 0 })
+  // voteCount!: number
 
   // @Field({ nullable: true })
   // @prop()
@@ -132,9 +133,9 @@ export class Project {
   @prop()
   tokenPrice?: number
 
-  @Field({ nullable: true })
-  @prop()
-  maxAllocation?: number
+  // @Field({ nullable: true })
+  // @prop()
+  // maxAllocation?: number
 
   @Field({ nullable: true })
   @prop({})
