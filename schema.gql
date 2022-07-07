@@ -14,8 +14,8 @@ type Account {
   email: String
   hasClaimedTickets: Boolean
   questCompleted: [Quest!]
-  transactions: [Transaction!]
   socialLinks: [SocialLink!]
+  transactions: [Transaction!]
 }
 
 type CallData {
@@ -184,13 +184,6 @@ input RoundInput {
   title: String
 }
 
-type Transaction {
-  _id: ID!
-  callerAddress: String
-  contractAddress: String
-  hash: String
-  name: String
-  timestamp: DateTime
 type SocialLink {
   id: String
   type: SocialLinkType
@@ -201,6 +194,15 @@ enum SocialLinkType {
   FACEBOOK
   TELEGRAM
   TWITTER
+}
+
+type Transaction {
+  _id: ID!
+  callerAddress: String
+  contractAddress: String
+  hash: String
+  name: String
+  timestamp: DateTime
 }
 
 type Uint256 {
