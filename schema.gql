@@ -15,6 +15,7 @@ type Account {
   hasClaimedTickets: Boolean
   questCompleted: [Quest!]
   transactions: [Transaction!]
+  socialLinks: [SocialLink!]
 }
 
 type CallData {
@@ -54,6 +55,7 @@ scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/fi
 type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
+  linkSocial(id: String, type: String!): Account!
   updateAccount(data: UpdateAccountInputType!): Account!
   updateProject(data: ProjectInput!): Project
   updateQuest(data: QuestInput!): Quest!
@@ -126,6 +128,7 @@ type Query {
   getAccount(address: String!): Account!
   getMerkleProof(idoId: String!): [String!]!
   getToken(address: String!): String!
+  getTwitterAuthUrl: String!
   getUploadUrl(fileType: String!): JSON!
   hello: String!
   isAdmin: Boolean!
@@ -188,6 +191,16 @@ type Transaction {
   hash: String
   name: String
   timestamp: DateTime
+type SocialLink {
+  id: String
+  type: SocialLinkType
+}
+
+enum SocialLinkType {
+  DISCORD
+  FACEBOOK
+  TELEGRAM
+  TWITTER
 }
 
 type Uint256 {

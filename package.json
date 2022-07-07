@@ -39,6 +39,7 @@
     "pino-pretty": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "starknet": "3.7.0",
+    "twitter-api-sdk": "^1.0.9",
     "type-graphql": "^1.1.1",
     "winston": "^3.7.2"
   },

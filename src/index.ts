@@ -15,6 +15,7 @@ import { connectToDb } from './Utils/Db'
 import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
+import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entity'
 
 void initGlobals()
 
@@ -70,6 +71,31 @@ const startServer = async (): Promise<void> => {
 
   apiRouter.get('/api', (ctx) => {
     ctx.body = 'hello captain'
+  })
+
+  apiRouter.get('/api/twitter-callback', async (ctx) => {
+    const { code, state } = ctx.request.query
+    const { token } = await globals.authClient.requestAccessToken(code as string)
+
+    const account = await AccountModel.findOne({
+      address: state
+    }).exec()
+
+    account.socialLinks = account.socialLinks.map(x => {
+      if (x.type !== SocialLinkType.TWITTER) {
+        return x
+      }
+
+      return {
+        ...x,
+        token
+      }
+    })
+
+    await account.save()
+
+    ctx.status = 303
+    ctx.redirect(`${globals.APP_URL}/profile`)
   })
 
   app.use(apiRouter.routes()).use(apiRouter.allowedMethods())

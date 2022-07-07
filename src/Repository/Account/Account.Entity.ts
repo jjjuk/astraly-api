@@ -1,10 +1,37 @@
-import { getModelForClass, prop, Ref } from '@typegoose/typegoose'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { getModelForClass, modelOptions, prop, Ref, Severity } from '@typegoose/typegoose'
+import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { Quest } from '../Quest/Quest.Entity'
 import { Transaction } from '../Transaction/Transaction.Entity'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { AppFile } from '../File/File.Entity'
+
+export enum SocialLinkType {
+  DISCORD = 'DISCORD',
+  TWITTER = 'TWITTER',
+  TELEGRAM = 'TELEGRAM',
+  FACEBOOK = 'FACEBOOK'
+}
+
+registerEnumType(SocialLinkType, {
+  name: 'SocialLinkType'
+})
+
+@ObjectType()
+@modelOptions({ options: { allowMixed: Severity.ALLOW } })
+export class SocialLink {
+  @Field(() => SocialLinkType, { nullable: true })
+  @prop({ enum: SocialLinkType, type: String})
+  type: SocialLinkType
+
+  @Field({ nullable: true })
+  @prop()
+  id: string
+
+  // should not be exposed
+  @prop()
+  token: any
+}
 
 @ObjectType()
 export class Account {
@@ -54,6 +81,10 @@ export class Account {
   @Field({ nullable: true })
   @prop()
   avatar: string
+
+  @Field(() => [SocialLink], { nullable: true })
+  @prop({ type: () => [SocialLink]})
+  socialLinks: SocialLink[]
 }
 
 export const AccountModel: ModelType<Account> = getModelForClass(Account, {

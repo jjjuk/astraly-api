@@ -1,9 +1,11 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
-import { Account, AccountModel } from './Account.Entity'
+import { Account, AccountModel, SocialLinkType } from './Account.Entity'
 import { Context } from 'koa'
 import { UpdateAccountInputType } from './AccountInputTypes'
 // import { validateSignature } from '../../Utils/Starknet/validateSignature'
 import { AppFileModel } from '../File/File.Entity'
+import { globals } from '../../Utils/Globals'
+import { DocumentType } from '@typegoose/typegoose'
 
 @Resolver()
 export class AccountResolvers {
@@ -85,5 +87,55 @@ export class AccountResolvers {
       alias: account.alias,
       questCompleted: account.questCompleted,
     }
+  }
+
+  @Authorized()
+  @Mutation(() => Account)
+  async linkSocial(
+    @Arg('type') type: SocialLinkType,
+    @Arg('id', { nullable: true }) id: string,
+    @Ctx() { address }: Context
+  ): Promise<DocumentType<Account>> {
+    const account = await AccountModel.findOne({
+      address,
+    }).exec()
+
+    if (account.socialLinks.find((x) => x.type === type)) {
+      if (!id) {
+        account.socialLinks = account.socialLinks.filter((x) => x.type !== type)
+      } else {
+        account.socialLinks = account.socialLinks.map((x) => {
+          if (x.type !== type) {
+            return x
+          }
+
+          return {
+            ...x,
+            id,
+          }
+        })
+      }
+
+      await account.save()
+
+      return account
+    }
+
+    return await AccountModel.findByIdAndUpdate(
+      account,
+      {
+        $push: { socialLinks: { type, id } },
+      },
+      { new: true }
+    ).exec()
+  }
+
+  @Authorized()
+  @Query(() => String)
+  getTwitterAuthUrl(@Ctx() { address }: Context): string {
+    return globals.authClient.generateAuthURL({
+      state: address,
+      code_challenge_method: 's256',
+    })
   }
 }

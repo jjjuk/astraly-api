@@ -1,4 +1,5 @@
 import aws from 'aws-sdk'
+import { auth } from "twitter-api-sdk"
 
 export class Globals {
     APP_URL = ''
@@ -17,6 +18,7 @@ export class Globals {
     s3Bucket = ''
     s3Folder = ''
     s3Endpoint = ''
+    authClient?: auth.OAuth2User
 }
 
 export const globals = new Globals()
