@@ -78,8 +78,10 @@ const startServer = async (): Promise<void> => {
     const { code, state } = ctx.request.query
     const { token } = await globals.authClient.requestAccessToken(code as string)
 
+    const _address = Array.isArray(state) ? state[0] : state
+
     const account = await AccountModel.findOne({
-      address: validateAndParseAddress(state.length > 0 ? state[0] : state),
+      address: validateAndParseAddress(_address),
     }).exec()
 
     account.socialLinks = account.socialLinks.map((x) => {
