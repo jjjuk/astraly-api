@@ -78,9 +78,12 @@ const startServer = async (): Promise<void> => {
     const { code, state } = ctx.request.query
     const { token } = await globals.authClient.requestAccessToken(code as string)
 
+    const _address = Array.isArray(state) ? state[0] : state
+
     const account = await AccountModel.findOne({
-      address: validateAndParseAddress(state[0]),
+      address: _address,
     }).exec()
+    console.log(account)
 
     account.socialLinks = account.socialLinks.map((x) => {
       if (x.type !== SocialLinkType.TWITTER) {
