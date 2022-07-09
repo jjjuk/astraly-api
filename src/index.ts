@@ -16,7 +16,7 @@ import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
 import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entity'
-import { validateAndParseAddress } from 'starknet'
+// import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
 
