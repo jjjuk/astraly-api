@@ -79,7 +79,7 @@ const startServer = async (): Promise<void> => {
     const { token } = await globals.authClient.requestAccessToken(code as string)
 
     const account = await AccountModel.findOne({
-      address: validateAndParseAddress(state[0]),
+      address: validateAndParseAddress(state.length > 0 ? state[0] : state),
     }).exec()
 
     account.socialLinks = account.socialLinks.map((x) => {
