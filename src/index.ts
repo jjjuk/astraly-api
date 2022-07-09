@@ -83,20 +83,31 @@ const startServer = async (): Promise<void> => {
     const account = await AccountModel.findOne({
       address: _address,
     }).exec()
-    console.log(account)
 
-    account.socialLinks = account.socialLinks.map((x) => {
-      if (x.type !== SocialLinkType.TWITTER) {
-        return x
-      }
+    const _username = (await globals.twitterClient.users.findMyUser()).data.username
 
-      return {
-        ...x,
-        token,
-      }
-    })
+    if (account.socialLinks.find((x) => x.type === SocialLinkType.TWITTER)) {
+      account.socialLinks = account.socialLinks.map((x) => {
+        if (x.type !== SocialLinkType.TWITTER) {
+          return x
+        }
 
-    await account.save()
+        return {
+          ...x,
+          token,
+          id: _username,
+        }
+      })
+      await account.save()
+    } else {
+      await AccountModel.findByIdAndUpdate(
+        account,
+        {
+          $push: { socialLinks: { type: SocialLinkType.TWITTER, token, id: _username } },
+        },
+        { new: true }
+      ).exec()
+    }
 
     ctx.status = 303
     ctx.redirect(`${globals.APP_URL}/profile`)

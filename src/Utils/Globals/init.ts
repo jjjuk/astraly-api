@@ -1,6 +1,6 @@
 import { globals } from './index'
 import aws from 'aws-sdk'
-import { Client, auth } from "twitter-api-sdk"
+import { Client, auth } from 'twitter-api-sdk'
 
 export const initGlobals = async (): Promise<void> => {
   globals.APP_URL = process.env.APP_URL
@@ -39,8 +39,9 @@ export const initGlobals = async (): Promise<void> => {
       client_id: process.env.TW_CLIENT_ID,
       client_secret: process.env.TW_CLIENT_SECRET,
       callback: `${globals.API_URL}/twitter-callback`,
-      scopes: ["tweet.read", "users.read"],
+      scopes: ['tweet.read', 'users.read'],
     })
     const _client = new Client(globals.authClient)
+    globals.twitterClient = _client
   }
 }
