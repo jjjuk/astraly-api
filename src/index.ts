@@ -16,6 +16,7 @@ import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
 import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entity'
+import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
 
@@ -78,17 +79,17 @@ const startServer = async (): Promise<void> => {
     const { token } = await globals.authClient.requestAccessToken(code as string)
 
     const account = await AccountModel.findOne({
-      address: state
+      address: validateAndParseAddress(state[0]),
     }).exec()
 
-    account.socialLinks = account.socialLinks.map(x => {
+    account.socialLinks = account.socialLinks.map((x) => {
       if (x.type !== SocialLinkType.TWITTER) {
         return x
       }
 
       return {
         ...x,
-        token
+        token,
       }
     })
 
