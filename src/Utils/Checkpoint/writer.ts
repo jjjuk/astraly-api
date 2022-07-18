@@ -7,6 +7,7 @@ import { TransactionModel } from '../../Repository/Transaction/Transaction.Entit
 export async function handleTransferSingle({ receipt, tx, block }): Promise<void> {
   try {
     // console.log('Handle Lottery Ticket Mint', receipt.events)
+    if (!receipt.events[0].data[3] || !receipt.events[0].data[5]) return
     const idoId = BigInt(receipt.events[0].data[3]).toString() // Uint256
     const amount = BigInt(receipt.events[0].data[5]).toString() // Uint256
     const from = validateAndParseAddress(receipt.events[0].data[1])
@@ -52,6 +53,8 @@ export async function handleVaultDeposit({ receipt, tx, block }): Promise<void> 
   try {
     const caller = validateAndParseAddress(receipt.events[3].data[0])
     const receiver = validateAndParseAddress(receipt.events[3].data[1])
+    if (!receipt.events[3].data[2] || !receipt.events[3].data[4]) return
+
     const assets = BigInt(receipt.events[3].data[2]).toString()
     const shares = BigInt(receipt.events[3].data[4]).toString()
     console.log(receiver, ethers.utils.formatUnits(assets, 'ether'), ethers.utils.formatUnits(shares, 'ether'))
@@ -76,6 +79,8 @@ export async function handleVaultWithdraw({ receipt, tx, block }): Promise<void>
   try {
     const caller = validateAndParseAddress(receipt.events[3].data[0])
     const receiver = validateAndParseAddress(receipt.events[3].data[2])
+    if (!receipt.events[3].data[3] || !receipt.events[3].data[5]) return
+
     const assets = BigInt(receipt.events[3].data[3]).toString()
     const shares = BigInt(receipt.events[3].data[5]).toString()
     console.log(receiver, ethers.utils.formatUnits(assets, 'ether'), ethers.utils.formatUnits(shares, 'ether'))
