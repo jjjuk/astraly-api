@@ -9,7 +9,7 @@
       "events": [
         {
           "name": "TransferSingle",
-          "fn": "handleLotteryTicketMint"
+          "fn": "handleTransferSingle"
         }
       ]
     },
