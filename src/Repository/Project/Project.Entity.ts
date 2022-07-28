@@ -127,6 +127,10 @@ export class Project {
 
   @Field({ nullable: true })
   @prop()
+  coverVideo?: string
+
+  @Field({ nullable: true })
+  @prop()
   totalRaise?: number
 
   @Field({ nullable: true })
