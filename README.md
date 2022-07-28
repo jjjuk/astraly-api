@@ -1,4 +1,11 @@
-# 💻 Astraly GraphQL API
+[![Discord](https://badgen.net/badge/icon/discord?icon=discord&label)](https://discord.gg/astralyxyz)
+[![Twitter](https://badgen.net/badge/icon/twitter?icon=twitter&label)](https://twitter.com/AstralyXYZ)
+
+![banner](https://testnet.astraly.xyz/images/home/banner_3d_full.png)
+
+# ☄️ Astraly API
+
+_API for Astraly, Community Engagement and Fundraising platform on Starknet. Learn more about it [here](https://wp.astraly.xyz)._
 
 ## Tech Stack
 
