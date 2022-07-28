@@ -36,8 +36,3 @@ S3_FOLDER=s3folder
 S3_BUCKET=s3bucket
 S3_IS_MINIO=true
 ```
-
-#### Docs
-
-You can find swagger docs at `/doc`
-Run the doc generation with `npm run swagger-autogen`
