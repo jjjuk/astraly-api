@@ -71,6 +71,11 @@ export class AccountResolvers {
       .exec()
   }
 
+  @Query(() => Number)
+  async total(): Promise<number> {
+    return await AccountModel.countDocuments().exec()
+  }
+
   @Query(() => Account)
   async getAccount(@Arg('address') address: string): Promise<Partial<Account>> {
     const account = await AccountModel.findOne({

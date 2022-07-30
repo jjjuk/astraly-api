@@ -77,13 +77,13 @@ type Project {
   _id: ID!
   categories: [String!]
   cover: String
+  coverVideo: String
   created: DateTime
   currentRoundIndex: Float
   description: String
   idoId: String
   isFinished: Boolean
   logo: String
-  maxAllocation: Float
   name: String
   quests: [Quest!]
   rounds: [Round!]
@@ -94,7 +94,6 @@ type Project {
   totalRaise: Float
   tx: String
   type: ProjectType
-  voteCount: Float
 }
 
 input ProjectInput {
@@ -121,6 +120,7 @@ input ProjectInput {
 enum ProjectType {
   GDA
   IDO
+  INO
   LBP
 }
 
@@ -138,6 +138,7 @@ type Query {
   quest(_id: String!): Quest!
   quests(idoId: String): [Quest!]!
   searchProjects(finished: Boolean, search: String): [Project!]!
+  total: Float!
 }
 
 type Quest {
