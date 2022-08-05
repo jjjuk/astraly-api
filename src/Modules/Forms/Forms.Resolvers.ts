@@ -16,7 +16,7 @@ export class FormsResolvers {
     })
 
     // Add to a newsletter list
-    await ApiClient.lists.addListMember('list_id', { email_address: _email, status: 'subscribed' })
+    await ApiClient.lists.addListMember('015518781d', { email_address: _email, status: 'subscribed' })
 
     return true
   }
