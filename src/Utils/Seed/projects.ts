@@ -29,26 +29,26 @@ export const roundsINO = [
   {
     title: 'Ticket Claim',
     description: 'You can claim your ticket.',
-    startDate: new Date(1659513600 * 1000),
+    startDate: new Date(1659621600 * 1000),
     endDate: new Date(1659945600 * 1000),
   },
   {
     title: 'Allocation',
     description: 'You can burn your ticket for allocations.',
-    startDate: new Date(1659945600 * 1000),
-    endDate: new Date(1660118400 * 1000),
+    startDate: new Date(1659967200 * 1000),
+    endDate: new Date(1660140000 * 1000),
   },
   {
     title: 'Purchase',
     description: 'You can invest in the INO.',
-    startDate: new Date(1660118400 * 1000),
-    endDate: new Date(1660377600 * 1000),
+    startDate: new Date(1660140000 * 1000),
+    endDate: new Date(1660312800 * 1000),
   },
   {
     title: 'Distribution',
     description: "Claim the NFTs you've bought.",
-    startDate: new Date(1660377600 * 1000),
-    endDate: new Date(1660550400 * 1000),
+    startDate: new Date(1660312800 * 1000),
+    endDate: new Date(1660399200 * 1000),
   },
 ]
 

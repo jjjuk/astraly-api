@@ -1,6 +1,7 @@
 import { globals } from './index'
 import aws from 'aws-sdk'
 import { Client, auth } from 'twitter-api-sdk'
+import ApiClient from '@mailchimp/mailchimp_marketing'
 
 export const initGlobals = async (): Promise<void> => {
   globals.APP_URL = process.env.APP_URL
@@ -43,5 +44,12 @@ export const initGlobals = async (): Promise<void> => {
     })
     const _client = new Client(globals.authClient)
     globals.twitterClient = _client
+  }
+
+  if (process.env.MAIL_API_KEY) {
+    ApiClient.setConfig({
+      apiKey: process.env.MAIL_API_KEY,
+      server: 'us17',
+    })
   }
 }

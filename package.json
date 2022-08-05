@@ -21,6 +21,7 @@
   "dependencies": {
     "@koa/cors": "^3.3.0",
     "@koa/router": "^10.1.1",
+    "@mailchimp/mailchimp_marketing": "^3.0.78",
     "@snapshot-labs/checkpoint": "^0.1.0-beta.4",
     "@typegoose/typegoose": "^9.9.0",
     "apollo-server-koa": "^3.8.2",
@@ -49,6 +50,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.8",
     "@types/koa__router": "^8.0.11",
+    "@types/mailchimp__mailchimp_marketing": "^3.0.5",
     "@types/validator": "^13.7.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.5.0",
