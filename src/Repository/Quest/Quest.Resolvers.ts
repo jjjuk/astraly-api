@@ -74,6 +74,25 @@ export class QuestResolvers {
     return proof
   }
 
+  @Authorized()
+  @Query(() => [Number])
+  async getNumberQuestsCompleted(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<number> {
+    const account = await AccountModel.findOne({
+      address,
+    }).exec()
+
+    if (!account) {
+      throw new Error('account not found')
+    }
+
+    const total = await QuestHistoryModel.countDocuments({
+      idoId: Number(idoId),
+      address,
+    }).exec()
+
+    return total
+  }
+
   @Query(() => Quest)
   async quest(@Arg('_id') _id: string): Promise<DocumentType<Quest>> {
     return await QuestModel.findById(_id).exec()
