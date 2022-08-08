@@ -61,7 +61,7 @@ export class QuestResolvers {
     const merkleProofs = await MerkleProofsModel.findOne({
       idoId: Number(idoId),
     }).exec()
-    const proof = merkleProofs.data[validateAndParseAddress(address)]
+    const proof = merkleProofs.data[address]
 
     if (!proof) {
       throw new Error('no proof found for address')

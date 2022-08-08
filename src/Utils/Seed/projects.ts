@@ -30,7 +30,7 @@ export const roundsINO = [
     title: 'Ticket Claim',
     description: 'You can claim your ticket.',
     startDate: new Date(1659621600 * 1000),
-    endDate: new Date(1659945600 * 1000),
+    endDate: new Date(1659967200 * 1000),
   },
   {
     title: 'Allocation',
