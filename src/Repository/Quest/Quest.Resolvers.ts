@@ -11,6 +11,7 @@ import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { QuestInput } from './Quest.InputTypes'
 import { BigNumber } from 'ethers'
 import { hexValue } from 'ethers/lib/utils'
+import { ProjectModel } from 'Repository/Project/Project.Entity'
 
 @Resolver()
 export class QuestResolvers {
@@ -33,6 +34,12 @@ export class QuestResolvers {
 
     if (!quest) {
       throw new Error('quest not found')
+    }
+
+    const project = await ProjectModel.findOne({ idoId: quest.idoId }).exec()
+
+    if (project.currentRoundIndex >== 1) {
+      throw new Error('cannot complete quests anymore')
     }
 
     await AccountModel.findByIdAndUpdate(account, {
