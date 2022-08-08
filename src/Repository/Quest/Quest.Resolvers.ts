@@ -75,7 +75,7 @@ export class QuestResolvers {
   }
 
   @Authorized()
-  @Query(() => [Number])
+  @Query(() => Number)
   async getNumberQuestsCompleted(@Arg('idoId') idoId: string, @Ctx() { address }: AppContext): Promise<number> {
     const account = await AccountModel.findOne({
       address,
