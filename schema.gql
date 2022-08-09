@@ -126,7 +126,7 @@ enum ProjectType {
 }
 
 type Query {
-  getAccount(address: String!): Account!
+  getAccount(address: String!): Account
   getMerkleProof(idoId: String!): [String!]!
   getNumberQuestsCompleted(idoId: String!): Float!
   getToken(address: String!): String!

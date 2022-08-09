@@ -2,10 +2,10 @@ import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Account, AccountModel, SocialLinkType } from './Account.Entity'
 import { Context } from 'koa'
 import { UpdateAccountInputType } from './AccountInputTypes'
-// import { validateSignature } from '../../Utils/Starknet/validateSignature'
 import { AppFileModel } from '../File/File.Entity'
 import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
+import { getParsedAddress } from '../../Utils/Starknet'
 
 @Resolver()
 export class AccountResolvers {
@@ -17,7 +17,7 @@ export class AccountResolvers {
   @Authorized()
   @Mutation(() => Account)
   async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { address }: Context): Promise<Account> {
-    const { alias: _a, ...savableData } = data
+    const { ...savableData } = data
     const account = await AccountModel.findOne({
       address,
     }).exec()
@@ -76,22 +76,11 @@ export class AccountResolvers {
     return await AccountModel.countDocuments().exec()
   }
 
-  @Query(() => Account)
+  @Query(() => Account, { nullable: true })
   async getAccount(@Arg('address') address: string): Promise<Partial<Account>> {
-    const account = await AccountModel.findOne({
-      address,
+    return await AccountModel.findOne({
+      address: getParsedAddress(address),
     }).exec()
-
-    if (!account) {
-      return null
-    }
-
-    return {
-      address,
-      bio: account.bio,
-      alias: account.alias,
-      questCompleted: account.questCompleted,
-    }
   }
 
   @Authorized()

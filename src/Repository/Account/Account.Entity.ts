@@ -1,10 +1,11 @@
 import { getModelForClass, modelOptions, prop, Ref, Severity } from '@typegoose/typegoose'
-import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
+import { Field, ID, ObjectType, registerEnumType, UseMiddleware } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { Quest } from '../Quest/Quest.Entity'
 import { Transaction } from '../Transaction/Transaction.Entity'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { AppFile } from '../File/File.Entity'
+import { OnlySelfOrAdmin } from '../../Utils/GraphQl'
 
 export enum SocialLinkType {
   DISCORD = 'DISCORD',
@@ -24,6 +25,7 @@ export class SocialLink {
   @prop({ enum: SocialLinkType, type: String})
   type: SocialLinkType
 
+  @UseMiddleware(OnlySelfOrAdmin)
   @Field({ nullable: true })
   @prop()
   id: string
@@ -49,6 +51,7 @@ export class Account {
   @prop()
   alias?: string
 
+  @UseMiddleware(OnlySelfOrAdmin)
   @Field({ nullable: true })
   @prop()
   email?: string
