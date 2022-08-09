@@ -11,7 +11,7 @@ import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { QuestInput } from './Quest.InputTypes'
 import { BigNumber } from 'ethers'
 import { hexValue } from 'ethers/lib/utils'
-import { ProjectModel } from 'Repository/Project/Project.Entity'
+import { ProjectModel } from '../Project/Project.Entity'
 
 @Resolver()
 export class QuestResolvers {
