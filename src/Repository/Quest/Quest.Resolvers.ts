@@ -38,7 +38,7 @@ export class QuestResolvers {
 
     const project = await ProjectModel.findOne({ idoId: quest.idoId }).exec()
 
-    if (project.currentRoundIndex >== 1) {
+    if (project.currentRoundIndex >= 1) {
       throw new Error('cannot complete quests anymore')
     }
 
