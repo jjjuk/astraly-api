@@ -84,8 +84,10 @@ type Project {
   description: String
   idoId: String
   isFinished: Boolean
+  links: [ProjectDescriptionItem!]
   logo: String
   name: String
+  projectDescription: [ProjectDescriptionItem!]
   quests: [Quest!]
   rounds: [Round!]
   ticker: String
@@ -97,6 +99,16 @@ type Project {
   type: ProjectType
 }
 
+type ProjectDescriptionItem {
+  key: String
+  value: String
+}
+
+input ProjectDescriptionItemInput {
+  key: String
+  value: String
+}
+
 input ProjectInput {
   _id: ID
   categories: [String!]
@@ -105,9 +117,11 @@ input ProjectInput {
   currentRoundId: ID
   description: String
   idoId: String!
+  links: [ProjectDescriptionItemInput]
   logo: String
   maxAllocation: Float
   name: String
+  projectDescription: [ProjectDescriptionItemInput]
   rounds: [RoundInput]
   ticker: String
   tokenAddress: String
@@ -132,6 +146,7 @@ type Query {
   getToken(address: String!): String!
   getTwitterAuthUrl: String!
   getUploadUrl(fileType: String!): JSON!
+  getUploadUrlAdmin(fileType: String!): JSON!
   hello: String!
   isAdmin: Boolean!
   me: Account!

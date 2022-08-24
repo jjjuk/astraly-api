@@ -21,6 +21,17 @@ export class Round {
   endDate: Date
 }
 
+@ObjectType()
+export class ProjectDescriptionItem {
+  @Field({ nullable: true })
+  @prop()
+  key: string
+
+  @Field({ nullable: true })
+  @prop()
+  value: string
+}
+
 export enum ProjectType {
   IDO = 'IDO',
   INO = 'INO',
@@ -156,6 +167,14 @@ export class Project {
   @Field({ nullable: true })
   @prop({ default: false })
   isFinished: boolean
+
+  @Field(() => [ProjectDescriptionItem], { nullable: true })
+  @prop({ type: () => [ProjectDescriptionItem], id: false })
+  projectDescription: ProjectDescriptionItem[]
+
+  @Field(() => [ProjectDescriptionItem], { nullable: true })
+  @prop({ type: () => [ProjectDescriptionItem], id: false })
+  links: ProjectDescriptionItem[]
 }
 
 export const ProjectModel = getModelForClass(Project, {

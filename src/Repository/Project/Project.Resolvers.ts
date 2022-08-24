@@ -3,6 +3,7 @@ import { Project, ProjectModel } from './Project.Entity'
 import { DocumentType } from '@typegoose/typegoose'
 import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { ProjectInput } from './Project.InputTypes'
+import { saveProject } from './Project.Services'
 
 @Resolver()
 export class ProjectResolvers {
@@ -31,7 +32,7 @@ export class ProjectResolvers {
 
   @Authorized([UserAccess.Admin])
   @Mutation(() => Project, { nullable: true })
-  updateProject(@Arg('data') data: ProjectInput): void {
-    console.log(data)
+  async updateProject(@Arg('data') data: ProjectInput): Promise<Project> {
+    return await saveProject(data)
   }
 }

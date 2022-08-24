@@ -2,7 +2,6 @@ import { Field, ID, InputType } from 'type-graphql'
 import { ObjectId } from '../../Utils/Types'
 import { ProjectType } from './Project.Entity'
 
-
 @InputType()
 export class RoundInput {
     @Field(() => ID, { nullable: true })
@@ -19,6 +18,15 @@ export class RoundInput {
 
     @Field({ nullable: true })
     endDate: Date
+}
+
+@InputType()
+export class ProjectDescriptionItemInput {
+    @Field({ nullable: true })
+    key: string
+
+    @Field({ nullable: true })
+    value: string
 }
 
 @InputType()
@@ -76,4 +84,10 @@ export class ProjectInput {
 
     @Field(() => [RoundInput], { nullable: 'itemsAndList' })
     rounds: RoundInput[]
+
+    @Field(() => [ProjectDescriptionItemInput], { nullable: 'itemsAndList' })
+    projectDescription: ProjectDescriptionItemInput[]
+
+    @Field(() => [ProjectDescriptionItemInput], { nullable: 'itemsAndList' })
+    links: ProjectDescriptionItemInput[]
 }
