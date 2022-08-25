@@ -65,6 +65,9 @@ export class ProjectInput {
     cover?: string
 
     @Field({ nullable: true })
+    coverVideo?: string
+
+    @Field({ nullable: true })
     totalRaise?: number
 
     @Field({ nullable: true })

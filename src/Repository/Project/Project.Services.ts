@@ -18,6 +18,7 @@ export const saveFile = async (fileId?: string): Promise<void> => {
 export const saveProject = async (data: ProjectInput): Promise<Project> => {
     data.logo && await saveFile(data.logo)
     data.cover && await saveFile(data.cover)
+    data.coverVideo && await saveFile(data.coverVideo)
 
     return await ProjectModel.findOneAndUpdate({
         idoId: data.idoId

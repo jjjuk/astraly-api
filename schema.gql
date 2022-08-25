@@ -113,6 +113,7 @@ input ProjectInput {
   _id: ID
   categories: [String!]
   cover: String
+  coverVideo: String
   created: DateTime
   currentRoundId: ID
   description: String

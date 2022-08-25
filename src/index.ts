@@ -109,6 +109,11 @@ const startServer = async (): Promise<void> => {
       ).exec()
     }
 
+    console.log({
+      token,
+      _username,
+    })
+
     ctx.status = 303
     ctx.redirect(`${globals.APP_URL}/profile`)
   })
