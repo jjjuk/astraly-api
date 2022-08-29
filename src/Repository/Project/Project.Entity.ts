@@ -66,10 +66,6 @@ export class Project {
   //
   // @Field({ nullable: true })
   // @prop()
-  // tokenPrice!: number
-  //
-  // @Field({ nullable: true })
-  // @prop()
   // amountOfTokensToSell!: number
   //
   // @Field({ nullable: true })
@@ -148,9 +144,9 @@ export class Project {
   @prop()
   tokenPrice?: number
 
-  // @Field({ nullable: true })
-  // @prop()
-  // maxAllocation?: number
+  @Field({ nullable: true })
+  @prop()
+  maxAllocation?: number
 
   @Field({ nullable: true })
   @prop({})
@@ -175,6 +171,10 @@ export class Project {
   @Field(() => [ProjectDescriptionItem], { nullable: true })
   @prop({ type: () => [ProjectDescriptionItem], id: false })
   links: ProjectDescriptionItem[]
+
+  @Field ({ nullable: true })
+  @prop({})
+  admission: string
 }
 
 export const ProjectModel = getModelForClass(Project, {

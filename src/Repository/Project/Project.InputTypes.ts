@@ -93,4 +93,7 @@ export class ProjectInput {
 
     @Field(() => [ProjectDescriptionItemInput], { nullable: 'itemsAndList' })
     links: ProjectDescriptionItemInput[]
+
+    @Field({ nullable: true })
+    admission?: string
 }
