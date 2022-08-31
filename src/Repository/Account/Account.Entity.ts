@@ -11,18 +11,18 @@ export enum SocialLinkType {
   DISCORD = 'DISCORD',
   TWITTER = 'TWITTER',
   TELEGRAM = 'TELEGRAM',
-  FACEBOOK = 'FACEBOOK'
+  FACEBOOK = 'FACEBOOK',
 }
 
 registerEnumType(SocialLinkType, {
-  name: 'SocialLinkType'
+  name: 'SocialLinkType',
 })
 
 @ObjectType()
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class SocialLink {
   @Field(() => SocialLinkType, { nullable: true })
-  @prop({ enum: SocialLinkType, type: String})
+  @prop({ enum: SocialLinkType, type: String })
   type: SocialLinkType
 
   @UseMiddleware(OnlySelfOrAdmin)
@@ -70,6 +70,12 @@ export class Account {
   })
   hasClaimedTickets?: boolean
 
+  @Field({ nullable: true })
+  @prop({
+    default: false,
+  })
+  autoBurn?: boolean
+
   @Field(() => [Quest], { nullable: true })
   @prop({ ref: 'Quest' })
   questCompleted?: Array<Ref<Quest>>
@@ -86,7 +92,7 @@ export class Account {
   avatar: string
 
   @Field(() => [SocialLink], { nullable: true })
-  @prop({ type: () => [SocialLink]})
+  @prop({ type: () => [SocialLink] })
   socialLinks: SocialLink[]
 }
 

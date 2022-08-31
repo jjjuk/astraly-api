@@ -16,4 +16,7 @@ export class UpdateAccountInputType {
 
   @Field({ nullable: true })
   avatar?: string
+
+  @Field({ nullable: true })
+  autoBurn?: boolean
 }
