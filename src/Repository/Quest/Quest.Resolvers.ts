@@ -43,21 +43,34 @@ export class QuestResolvers {
       throw new Error('cannot complete quests anymore')
     }
 
-    if (quest.icon === 'twitter') {
-      const targetAccount = quest.link.split('twitter.com/')[1]
-      const twitterInfo = account.socialLinks.find(x => x.type === SocialLinkType.TWITTER)
-      const twitterId = twitterInfo.internalId
-      const client = new Client(twitterInfo.token.access_token)
-      const { data: followedUsers } = await client.users.usersIdFollowing(
-          twitterId
-      )
+    try {
+      if (quest.icon === 'twitter') {
+        const targetAccount = quest.link.split('twitter.com/')[1]
+        const twitterInfo = account.socialLinks.find(x => x.type === SocialLinkType.TWITTER)
+        const twitterId = twitterInfo.internalId
+        const client = new Client(twitterInfo.token.access_token)
+        let nextToken = null
+        const followedUsers = []
+        do {
+          const res = await client.users.usersIdFollowing(
+              twitterId,
+              { max_results: 1000, pagination_token: nextToken }
+          )
+          followedUsers.push(...res.data)
+          nextToken = res?.meta?.next_token
+        } while (nextToken)
 
-      const follows = followedUsers.find(x => String(x.username).toLowerCase() === String(targetAccount).toLowerCase())
+        const follows = followedUsers.find(x => String(x.username).toLowerCase() === String(targetAccount).toLowerCase())
 
-      if (!follows) {
-        console.log({ follows, followedUsers, targetAccount, link: quest.link })
-        throw new Error('conditions not met')
+        if (!follows) {
+          console.log({ follows, followedUsers, targetAccount, link: quest.link })
+          throw new Error('conditions not met')
+        }
       }
+    } catch (e) {
+      console.error('error checking twitter conditions')
+      console.error(e)
+      throw new Error('conditions not met')
     }
 
     await AccountModel.findByIdAndUpdate(account, {
