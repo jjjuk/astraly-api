@@ -80,7 +80,7 @@ export class Quest {
   readonly _id!: ObjectId
 
   @Field({ nullable: true })
-  @prop()
+  @prop( { index: true })
   idoId!: number
 
   @Field({ nullable: true })

@@ -1,7 +1,7 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Quest, QuestModel } from './Quest.Entity'
 import { AppContext } from '../../Utils/Types/context'
-import { AccountModel } from '../Account/Account.Entity'
+import { AccountModel, SocialLinkType } from '../Account/Account.Entity'
 import { QuestHistoryModel } from './QuestHistory.Entity'
 import { MerkleProofsModel } from './MerkleProofs.Entity'
 // import { UserAccess } from '../../Modules/Auth/AuthChecker'
@@ -12,6 +12,7 @@ import { QuestInput } from './Quest.InputTypes'
 import { BigNumber } from 'ethers'
 import { hexValue } from 'ethers/lib/utils'
 import { ProjectModel } from '../Project/Project.Entity'
+import { Client } from 'twitter-api-sdk'
 
 @Resolver()
 export class QuestResolvers {
@@ -40,6 +41,23 @@ export class QuestResolvers {
 
     if (project.currentRoundIndex >= 1) {
       throw new Error('cannot complete quests anymore')
+    }
+
+    if (quest.icon === 'twitter') {
+      const targetAccount = quest.link.split('twitter.com/')[1]
+      const twitterInfo = account.socialLinks.find(x => x.type === SocialLinkType.TWITTER)
+      const twitterId = twitterInfo.internalId
+      const client = new Client(twitterInfo.token.access_token)
+      const { data: followedUsers } = await client.users.usersIdFollowing(
+          twitterId
+      )
+
+      const follows = followedUsers.find(x => String(x.username).toLowerCase() === String(targetAccount).toLowerCase())
+
+      if (!follows) {
+        console.log({ follows, followedUsers, targetAccount, link: quest.link })
+        throw new Error('conditions not met')
+      }
     }
 
     await AccountModel.findByIdAndUpdate(account, {
@@ -120,6 +138,7 @@ export class QuestResolvers {
   @Mutation(() => Quest)
   async updateQuest(@Arg('data') data: QuestInput): Promise<DocumentType<Quest>> {
     const { _id, ...d } = data
+    console.log(d)
     if (_id) {
       return await QuestModel.findByIdAndUpdate(_id, {
         $set: {

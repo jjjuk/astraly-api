@@ -49,7 +49,7 @@ export class Project {
   readonly _id!: ObjectId
 
   @Field({ nullable: true })
-  @prop()
+  @prop({ index: true })
   idoId!: string
 
   @Field({ nullable: true })
@@ -161,7 +161,7 @@ export class Project {
   rounds: Round[]
 
   @Field({ nullable: true })
-  @prop({ default: false })
+  @prop({ default: false, index: true })
   isFinished: boolean
 
   @Field(() => [ProjectDescriptionItem], { nullable: true })

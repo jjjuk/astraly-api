@@ -61,7 +61,7 @@ const startServer = async (): Promise<void> => {
   })
 
   app.listen({ port: globals.PORT }, () => {
-    Logger.info(`🚀 Server ready at https://${globals.HOST}:${globals.PORT}${server.graphqlPath}, ${globals.API_URL}`)
+    Logger.info(`🚀 Server ready at http://${globals.HOST}:${globals.PORT}${server.graphqlPath}, ${globals.API_URL}`)
   })
 
   await server.start()
@@ -85,6 +85,8 @@ const startServer = async (): Promise<void> => {
     }).exec()
 
     const _username = (await globals.twitterClient.users.findMyUser()).data.username
+    const internalId = (await globals.twitterClient.users.findMyUser()).data.id
+    const validUntil = token.expires_at
 
     if (account.socialLinks.find((x) => x.type === SocialLinkType.TWITTER)) {
       account.socialLinks = account.socialLinks.map((x) => {
@@ -96,6 +98,8 @@ const startServer = async (): Promise<void> => {
           ...x,
           token,
           id: _username,
+          internalId,
+          validUntil,
         }
       })
       await account.save()
@@ -103,16 +107,11 @@ const startServer = async (): Promise<void> => {
       await AccountModel.findByIdAndUpdate(
         account,
         {
-          $push: { socialLinks: { type: SocialLinkType.TWITTER, token, id: _username } },
+          $push: { socialLinks: { type: SocialLinkType.TWITTER, token, id: _username, internalId, validUntil } },
         },
         { new: true }
       ).exec()
     }
-
-    console.log({
-      token,
-      _username,
-    })
 
     ctx.status = 303
     ctx.redirect(`${globals.APP_URL}/profile`)

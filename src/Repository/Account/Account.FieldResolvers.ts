@@ -1,5 +1,5 @@
 import { FieldResolver, Resolver, Root } from 'type-graphql'
-import { Account } from './Account.Entity'
+import { Account, SocialLink } from './Account.Entity'
 import { DocumentType } from '@typegoose/typegoose'
 import { AppFileModel } from '../File/File.Entity'
 import { isBefore } from 'date-fns'
@@ -16,6 +16,11 @@ export class AccountFieldResolvers {
   @FieldResolver(() => String, { nullable: true })
   async avatar (@Root() account: DocumentType<Account>): Promise<string | null> {
     return await this._fileFieldResolver(account, 'avatar')
+  }
+
+  @FieldResolver(() => [SocialLink], { nullable: true })
+  async socialLinks (@Root() account: DocumentType<Account>): Promise<SocialLink[]> {
+    return account.socialLinks ? account.socialLinks.filter(x => !x.validUntil || isBefore(new Date(), x.validUntil)) : []
   }
 
   async _fileFieldResolver (account: DocumentType<Account>, field: 'cover' | 'avatar'): Promise<string | null> {

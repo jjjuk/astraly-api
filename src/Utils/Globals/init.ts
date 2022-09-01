@@ -40,7 +40,7 @@ export const initGlobals = async (): Promise<void> => {
       client_id: process.env.TW_CLIENT_ID,
       client_secret: process.env.TW_CLIENT_SECRET,
       callback: `${globals.API_URL}/twitter-callback`,
-      scopes: ['tweet.read', 'users.read'],
+      scopes: ['tweet.read', 'users.read', 'follows.read'],
     })
     const _client = new Client(globals.authClient)
     globals.twitterClient = _client

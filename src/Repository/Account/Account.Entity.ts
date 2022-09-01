@@ -33,6 +33,12 @@ export class SocialLink {
   // should not be exposed
   @prop()
   token: any
+
+  @prop()
+  internalId: any
+
+  @prop()
+  validUntil: Date
 }
 
 @ObjectType()
@@ -44,6 +50,7 @@ export class Account {
   @prop({
     required: true,
     unique: true,
+    index: true,
   })
   address!: string
 
