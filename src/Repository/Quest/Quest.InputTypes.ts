@@ -68,4 +68,7 @@ export class QuestInput {
 
     @Field(() => QuestType, { nullable: true })
     type: QuestType
+
+    @Field({ nullable: true })
+    subType: string
 }

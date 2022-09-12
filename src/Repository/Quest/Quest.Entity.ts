@@ -110,6 +110,10 @@ export class Quest {
   @Field(() => QuestType, { nullable: true })
   @prop({ enum: QuestType, type: String })
   type: QuestType
+
+  @Field({ nullable: true })
+  @prop()
+  subType: string
 }
 
 export const QuestModel = getModelForClass(Quest, {

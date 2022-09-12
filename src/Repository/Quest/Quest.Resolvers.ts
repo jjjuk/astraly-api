@@ -4,8 +4,6 @@ import { AppContext } from '../../Utils/Types/context'
 import { AccountModel, SocialLinkType } from '../Account/Account.Entity'
 import { QuestHistoryModel } from './QuestHistory.Entity'
 import { MerkleProofsModel } from './MerkleProofs.Entity'
-// import { UserAccess } from '../../Modules/Auth/AuthChecker'
-// import { validateAndParseAddress } from 'starknet'
 import { DocumentType } from '@typegoose/typegoose'
 import { UserAccess } from '../../Modules/Auth/AuthChecker'
 import { QuestInput } from './Quest.InputTypes'
@@ -45,26 +43,51 @@ export class QuestResolvers {
 
     try {
       if (quest.icon === 'twitter') {
-        const targetAccount = quest.link.split('twitter.com/')[1]
         const twitterInfo = account.socialLinks.find(x => x.type === SocialLinkType.TWITTER)
-        const twitterId = twitterInfo.internalId
         const client = new Client(twitterInfo.token.access_token)
-        let nextToken = null
-        const followedUsers = []
-        do {
-          const res = await client.users.usersIdFollowing(
-              twitterId,
-              { max_results: 1000, pagination_token: nextToken }
-          )
-          followedUsers.push(...res.data)
-          nextToken = res?.meta?.next_token
-        } while (nextToken)
+        if (quest.subType === 'follow' || !quest.subType) {
+          const targetAccount = quest.link.split('twitter.com/')[1]
+          const twitterId = twitterInfo.internalId
+          let nextToken = null
+          const followedUsers = []
+          do {
+            const res = await client.users.usersIdFollowing(
+                twitterId,
+                { max_results: 1000, pagination_token: nextToken }
+            )
+            followedUsers.push(...res.data)
+            nextToken = res?.meta?.next_token
+          } while (nextToken)
 
-        const follows = followedUsers.find(x => String(x.username).toLowerCase() === String(targetAccount).toLowerCase())
+          const follows = followedUsers.find(x => String(x.username).toLowerCase() === String(targetAccount).toLowerCase())
 
-        if (!follows) {
-          console.log({ follows, followedUsers, targetAccount, link: quest.link })
-          throw new Error('conditions not met')
+          if (!follows) {
+            console.log({ follows, followedUsers, targetAccount, link: quest.link })
+            throw new Error('conditions not met')
+          }
+        } else if (quest.subType === 'retweet') {
+          const targetPost = quest.link.split('/status/')[1]
+          const tweets = []
+          let nextToken = null
+          do {
+            const res = await client.tweets.usersIdTweets(twitterInfo.internalId, {
+              since_id: targetPost,
+              exclude: ['replies'],
+              max_results: 100,
+              expansions: ['referenced_tweets.id']
+            })
+            tweets.push(...res.data)
+            nextToken = res?.meta?.next_token
+          } while (nextToken)
+
+          const retweets = tweets.filter(x => x.referenced_tweets?.filter(y => y.type === 'retweeted').length).map(x => {
+            const retweetReference = x.referenced_tweets.find(y => y.type === 'retweeted')
+            return retweetReference.id
+          })
+          if (!retweets.length || !retweets.includes(targetPost)) {
+            console.log({ retweets, targetPost })
+            throw new Error('conditions not met')
+          }
         }
       }
     } catch (e) {

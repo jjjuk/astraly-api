@@ -172,6 +172,7 @@ type Quest {
   isClaimed: Boolean
   link: String
   name: String
+  subType: String
   type: QuestType
 }
 
@@ -184,6 +185,7 @@ input QuestInput {
   isClaimed: Boolean
   link: String
   name: String
+  subType: String
   type: QuestType
 }
 

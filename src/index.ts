@@ -84,8 +84,10 @@ const startServer = async (): Promise<void> => {
       address: _address,
     }).exec()
 
-    const _username = (await globals.twitterClient.users.findMyUser()).data.username
-    const internalId = (await globals.twitterClient.users.findMyUser()).data.id
+    const user = await globals.twitterClient.users.findMyUser()
+
+    const _username = user.data.username
+    const internalId = user.data.id
     const validUntil = token.expires_at
 
     if (account.socialLinks.find((x) => x.type === SocialLinkType.TWITTER)) {
