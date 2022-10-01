@@ -57,7 +57,9 @@ type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
   linkSocial(id: String, type: String!): Account!
+  login(email: String!, string: String!): String!
   newsletter(email: String!, form: String = "footer"): Boolean!
+  signup(email: String!, string: String!): String!
   updateAccount(data: UpdateAccountInputType!): Account!
   updateProject(data: ProjectInput!): Project
   updateQuest(data: QuestInput!): Quest!

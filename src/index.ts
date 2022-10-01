@@ -121,7 +121,7 @@ const startServer = async (): Promise<void> => {
 
   app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
-  await initCheckpoint()
+  // await initCheckpoint()
 }
 
 if (command === 'generateQuests') {

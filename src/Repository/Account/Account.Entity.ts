@@ -101,6 +101,9 @@ export class Account {
   @Field(() => [SocialLink], { nullable: true })
   @prop({ type: () => [SocialLink] })
   socialLinks: SocialLink[]
+
+  @prop()
+  password?: string
 }
 
 export const AccountModel: ModelType<Account> = getModelForClass(Account, {
