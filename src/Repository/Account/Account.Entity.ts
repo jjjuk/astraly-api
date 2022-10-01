@@ -46,13 +46,15 @@ export class Account {
   @Field(() => ID)
   readonly _id!: ObjectId
 
+  address!: string
+  //addresses: string[]
+
   @Field({ nullable: true })
   @prop({
     required: true,
     unique: true,
     index: true,
   })
-  address!: string
 
   @Field({ nullable: true })
   @prop()
