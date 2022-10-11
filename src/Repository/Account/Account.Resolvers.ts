@@ -6,6 +6,8 @@ import { AppFileModel } from '../File/File.Entity'
 import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
+import { connectWalletToAccount } from './AccountService'
+import { add } from 'date-fns'
 
 @Resolver()
 export class AccountResolvers {
@@ -16,10 +18,10 @@ export class AccountResolvers {
 
   @Authorized()
   @Mutation(() => Account)
-  async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { address }: Context): Promise<Account> {
+  async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { id }: Context): Promise<Account> {
     const { ...savableData } = data
     const account = await AccountModel.findOne({
-      address,
+      id,
     }).exec()
 
     const saveFile = async (field: 'cover' | 'avatar'): Promise<void> => {
@@ -50,7 +52,7 @@ export class AccountResolvers {
 
     return await AccountModel.findOneAndUpdate(
       {
-        address,
+        id,
       },
       {
         ...savableData,
@@ -63,24 +65,20 @@ export class AccountResolvers {
 
   @Authorized()
   @Query(() => Account)
-  async me(@Ctx() { address }: Context): Promise<Account> {
-    return await AccountModel.findOne({
-      address,
-    })
+  me(@Ctx() { address, id }: Context): Promise<Account> {
+    return AccountModel.findOne(id ? { id } : { address })
       .populate('transactions')
       .exec()
   }
 
   @Query(() => Number)
-  async total(): Promise<number> {
-    return await AccountModel.countDocuments().exec()
+  total(): Promise<number> {
+    return AccountModel.countDocuments().exec()
   }
 
   @Query(() => Account, { nullable: true })
-  async getAccount(@Arg('address') address: string): Promise<Partial<Account>> {
-    return await AccountModel.findOne({
-      address: getParsedAddress(address),
-    }).exec()
+  getAccount(@Arg('address') address: string): Promise<Partial<Account>> {
+    return AccountModel.findOne({ address: getParsedAddress(address) }).exec()
   }
 
   @Authorized()
@@ -88,11 +86,9 @@ export class AccountResolvers {
   async linkSocial(
     @Arg('type') type: SocialLinkType,
     @Arg('id', { nullable: true }) id: string,
-    @Ctx() { address }: Context
+    @Ctx() { address, id: _id }: Context
   ): Promise<DocumentType<Account>> {
-    const account = await AccountModel.findOne({
-      address,
-    }).exec()
+    const account = await AccountModel.findOne(_id ? { id: _id } : { address }).exec()
 
     if (account.socialLinks.find((x) => x.type === type)) {
       if (!id) {
@@ -126,10 +122,16 @@ export class AccountResolvers {
 
   @Authorized()
   @Query(() => String)
-  getTwitterAuthUrl(@Ctx() { address }: Context): string {
+  getTwitterAuthUrl(@Ctx() { id }: Context): string {
     return globals.authClient.generateAuthURL({
-      state: address,
+      state: id,
       code_challenge_method: 's256',
     })
+  }
+
+  @Authorized()
+  @Mutation(() => Account)
+  linkWallet(@Ctx() { id }: Context, @Arg('address') address: string) {
+    return connectWalletToAccount(id, getParsedAddress(address))
   }
 }

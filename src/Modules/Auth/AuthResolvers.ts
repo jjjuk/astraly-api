@@ -45,7 +45,7 @@ export class AuthResolvers {
   }
 
   @Mutation(() => String)
-  async signup(@Arg('email') email: string, @Arg('string') password: string) {
+  async signup(@Arg('email') email: string, @Arg('password') password: string) {
     if (await existsAccountByEmail(email)) throw new Error('User already exists')
 
     if (!isEmail(email)) throw new Error('Invalid email')
@@ -56,10 +56,10 @@ export class AuthResolvers {
   }
 
   @Mutation(() => String)
-  async login(@Arg('email') email: string, @Arg('string') password: string) {
+  async login(@Arg('email') email: string, @Arg('password') password: string) {
     const acc = await getAccountByEmailAndPassword(email, password)
 
-    const parsedAddress = acc.address && getParsedAddress(acc.address)
+    const parsedAddress = acc?.address && getParsedAddress(acc.address)
 
     if (!acc) throw new Error('Wrong password')
 

@@ -21,7 +21,7 @@ import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entit
 void initGlobals()
 
 const app = new Koa()
-app.use(cors())
+app.use(cors({ origin: '*' }))
 app.use(
   bodyParser({
     formLimit: '500mb',
@@ -42,13 +42,17 @@ const startServer = async (): Promise<void> => {
       let jwtToken = ctx?.request.headers.authorization || ''
 
       let address = ''
+      let id = ''
 
       if (jwtToken) {
         try {
           jwtToken = jwtToken.replace('Bearer ', '')
-          const { data } = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
-          address = data
+          const payload = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
+          console.log(payload)
+          address = payload.data
+          id = payload.id
         } catch (e) {
+          console.error(e)
           console.error('CTX, INVALID JWT')
         }
       }
@@ -56,6 +60,7 @@ const startServer = async (): Promise<void> => {
       return {
         jwtToken,
         address,
+        id,
       }
     },
   })

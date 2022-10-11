@@ -6,8 +6,12 @@ export const createAccountByAddress = async (address: string) => {
   return account ?? (await AccountModel.create({ address }))
 }
 
+export const connectWalletToAccount = (id: string, address: string) => {
+  return AccountModel.findOneAndUpdate({ id }, { address }, { new: true })
+}
+
 export const existsAccountByEmail = async (email: string): Promise<boolean> => {
-  return !!(await AccountModel.exists({ email }).exec())
+  return !!(await AccountModel.exists({ email }))
 }
 
 export const getAccountByEmailAndPassword = async (email: string, password: string) => {
