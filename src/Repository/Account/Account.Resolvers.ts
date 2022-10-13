@@ -7,7 +7,6 @@ import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { connectWalletToAccount } from './AccountService'
-import { add } from 'date-fns'
 
 @Resolver()
 export class AccountResolvers {
@@ -65,10 +64,20 @@ export class AccountResolvers {
 
   @Authorized()
   @Query(() => Account)
-  me(@Ctx() { address, id }: Context): Promise<Account> {
-    return AccountModel.findOne(id ? { id } : { address })
+  async me(@Ctx() ctx: Context): Promise<Account> {
+    const { address, id } = ctx
+
+    console.log(ctx)
+
+    if (!address && !id) throw new Error('Invalid context of user')
+
+    const acc = await AccountModel.findOne(id ? { _id: id } : { address })
       .populate('transactions')
       .exec()
+
+    console.log(acc.toJSON())
+
+    return acc
   }
 
   @Query(() => Number)
@@ -77,8 +86,13 @@ export class AccountResolvers {
   }
 
   @Query(() => Account, { nullable: true })
-  getAccount(@Arg('address') address: string): Promise<Partial<Account>> {
-    return AccountModel.findOne({ address: getParsedAddress(address) }).exec()
+  getAccount(@Arg('address', { nullable: true }) address: string): Promise<Partial<Account>> {
+    return address ? AccountModel.findOne({ address: getParsedAddress(address) }).exec() : null
+  }
+
+  @Query(() => [Account])
+  accounts() {
+    return AccountModel.find({}).exec()
   }
 
   @Authorized()
@@ -88,7 +102,7 @@ export class AccountResolvers {
     @Arg('id', { nullable: true }) id: string,
     @Ctx() { address, id: _id }: Context
   ): Promise<DocumentType<Account>> {
-    const account = await AccountModel.findOne(_id ? { id: _id } : { address }).exec()
+    const account = await AccountModel.findOne(_id ? { _id } : { address }).exec()
 
     if (account.socialLinks.find((x) => x.type === type)) {
       if (!id) {

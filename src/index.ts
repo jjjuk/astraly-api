@@ -16,6 +16,7 @@ import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
 import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entity'
+import Mailer from './Utils/Mail'
 // import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
@@ -31,6 +32,8 @@ app.use(
 
 const argv = process.argv.slice(2) || []
 const command = argv[0]
+
+const mailer = new Mailer({ username: 'Astrally', password: '7YqNpJoS9M_4M590i3unXw' })
 
 const startServer = async (): Promise<void> => {
   await connectToDb(globals.DB_HOST, globals.DB_NAME)
@@ -48,7 +51,6 @@ const startServer = async (): Promise<void> => {
         try {
           jwtToken = jwtToken.replace('Bearer ', '')
           const payload = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
-          console.log(payload)
           address = payload.data
           id = payload.id
         } catch (e) {
@@ -61,6 +63,9 @@ const startServer = async (): Promise<void> => {
         jwtToken,
         address,
         id,
+        get mailer() {
+          return mailer
+        },
       }
     },
   })

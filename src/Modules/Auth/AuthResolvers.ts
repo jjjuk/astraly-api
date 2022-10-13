@@ -12,8 +12,10 @@ import isEmail from 'validator/lib/isEmail'
 import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
+import nanoid from 'nanoid'
+
 export class AuthResolvers {
-  @Query(() => String)
+  @Query(() => String, { nullable: true })
   async getToken(@Arg('address') address: string): Promise<string> {
     const parsedAddress = getParsedAddress(address)
 
@@ -34,25 +36,35 @@ export class AuthResolvers {
       throw new Error('Invalid address')
     }
 
-    return jwt.sign(
-      {
-        id: acc.id,
-        data: parsedAddress,
-      },
-      globals.JWT_KEY,
-      { expiresIn: '24h' }
-    )
+    return acc
+      ? jwt.sign(
+          {
+            id: acc.id,
+            data: parsedAddress,
+          },
+          globals.JWT_KEY,
+          { expiresIn: '24h' }
+        )
+      : null
   }
 
   @Mutation(() => String)
-  async signup(@Arg('email') email: string, @Arg('password') password: string) {
+  async signup(
+    @Arg('email') email: string,
+    @Arg('password') password: string,
+    @Arg('address', { nullable: true }) address?: string
+  ) {
     if (await existsAccountByEmail(email)) throw new Error('User already exists')
 
     if (!isEmail(email)) throw new Error('Invalid email')
 
-    const acc = await AccountModel.create({ email, password: hashSync(password, 10) })
+    if (address && !(await AccountModel.exists({ address }))) throw new Error('Invalid address')
 
-    return jwt.sign({ data: null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
+    const acc = !address
+      ? await AccountModel.create({ email, password: hashSync(password, 10) })
+      : await AccountModel.findOneAndUpdate({ address }, { email, password: hashSync(password, 10) }, { new: true })
+
+    return jwt.sign({ data: acc.address ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
 
   @Mutation(() => String)
@@ -73,5 +85,45 @@ export class AuthResolvers {
   @Query(() => Boolean)
   isAdmin(): boolean {
     return true
+  }
+
+  @Mutation(() => Boolean)
+  async validateResetToken(@Arg('token') token: string) {
+    return !!(await this.isTokenValid(token))
+  }
+
+  @Mutation(() => Boolean)
+  async resetPassword(@Arg('token') token: string, @Arg('newPassword') newPassword: string) {
+    const acc = await this.isTokenValid(token)
+
+    return !!(await acc.update({ password: hashSync(newPassword, 10) }))
+  }
+
+  @Mutation(() => Date)
+  async requestPasswordReset(@Arg('email') email: string) {
+    const acc = await AccountModel.exists({ email })
+
+    const resetTokenValidUntil = new Date(Date.now() + 36e5)
+
+    if (acc)
+      AccountModel.findOneAndUpdate(
+        acc,
+        {
+          resetTokenValidUntil,
+          resetToken: nanoid(),
+        },
+        { new: true }
+      )
+        .exec()
+        .then(console.log)
+
+    return resetTokenValidUntil
+  }
+
+  private async isTokenValid(token: string) {
+    const acc = await AccountModel.findOne({ resetToken: token })
+    if (!acc || acc.resetTokenValidUntil.getTime() < Date.now()) {
+      throw new Error('Invalid token')
+    } else return acc
   }
 }

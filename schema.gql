@@ -60,10 +60,13 @@ type Mutation {
   linkWallet(address: String!): Account!
   login(email: String!, password: String!): String!
   newsletter(email: String!, form: String = "footer"): Boolean!
-  signup(email: String!, password: String!): String!
+  requestPasswordReset(email: String!): DateTime!
+  resetPassword(newPassword: String!, token: String!): Boolean!
+  signup(address: String, email: String!, password: String!): String!
   updateAccount(data: UpdateAccountInputType!): Account!
   updateProject(data: ProjectInput!): Project
   updateQuest(data: QuestInput!): Quest!
+  validateResetToken(token: String!): Boolean!
 }
 
 type OrganizedEvent {
@@ -148,10 +151,11 @@ enum ProjectType {
 }
 
 type Query {
-  getAccount(address: String!): Account
+  accounts: [Account!]!
+  getAccount(address: String): Account
   getMerkleProof(idoId: String!): [String!]!
   getNumberQuestsCompleted(idoId: String!): Float!
-  getToken(address: String!): String!
+  getToken(address: String!): String
   getTwitterAuthUrl: String!
   getUploadUrl(fileType: String!): JSON!
   getUploadUrlAdmin(fileType: String!): JSON!

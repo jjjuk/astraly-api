@@ -2,12 +2,15 @@ import { compareSync } from 'bcrypt'
 import { AccountModel } from './Account.Entity'
 
 export const createAccountByAddress = async (address: string) => {
-  const account = await AccountModel.findOne({ address }).exec()
-  return account ?? (await AccountModel.create({ address }))
+  if (address) {
+    const account = await AccountModel.findOne({ address }).exec()
+    console.log(account)
+    return account ?? (await AccountModel.create({ address }))
+  } else return null
 }
 
-export const connectWalletToAccount = (id: string, address: string) => {
-  return AccountModel.findOneAndUpdate({ id }, { address }, { new: true })
+export const connectWalletToAccount = (_id: string, address: string) => {
+  return AccountModel.findOneAndUpdate({ _id }, { address }, { new: true })
 }
 
 export const existsAccountByEmail = async (email: string): Promise<boolean> => {
