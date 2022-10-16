@@ -6,6 +6,15 @@ export class Globals {
   API_URL = ''
   DB_HOST = ''
   DB_NAME = ''
+
+  GOOGLE_CLIENT_ID = ''
+  GOOGLE_CLIENT_SECRET = ''
+  TW_CLIENT_ID = ''
+  TW_CLIENT_SECRET = ''
+
+  MAILGUN_USERNAME = ''
+  MAILGUN_SMTP_PASSWORD= ''
+
   JWT_KEY = 'My_key'
   PORT = '4002'
   HOST = 'localhost'

@@ -6,4 +6,5 @@ export interface AppContext {
   id: string
   mailer: Mailer
   queryArgs?: any
+  device: string
 }

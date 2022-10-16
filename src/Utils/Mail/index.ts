@@ -9,15 +9,15 @@ export interface MailerProps {
 
 interface SendPasswordResetArgs {
   to: string
-  template?: ResetPasswordArgs
+  template: ResetPasswordArgs
 }
 
 export default class Mailer {
   private transporter: Transporter
   public constructor(public props: MailerProps) {
     this.transporter = createTransport({
-      host: 'smtp.mandrillapp.com',
-      port: props?.ssl ? 465 : 587,
+      host: 'smtp.mailgun.org',
+      port: 587,
       auth: {
         user: props.username,
         pass: props.password,
@@ -29,6 +29,7 @@ export default class Mailer {
     return this.transporter
       .sendMail({
         to: args.to,
+        subject: 'Astraly Password Reset', // TODO: change it as you wish
         html: resetPassword(args.template),
       })
       .catch(console.error)

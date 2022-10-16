@@ -1,4 +1,4 @@
-import { Arg, Authorized, Mutation, Query } from 'type-graphql'
+import { Arg, Authorized, Ctx, Mutation, Query } from 'type-graphql'
 import jwt from 'jsonwebtoken'
 import {
   createAccountByAddress,
@@ -13,6 +13,7 @@ import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
 import nanoid from 'nanoid'
+import { AppContext } from 'Utils/Types/context'
 
 export class AuthResolvers {
   @Query(() => String, { nullable: true })
@@ -100,22 +101,28 @@ export class AuthResolvers {
   }
 
   @Mutation(() => Date)
-  async requestPasswordReset(@Arg('email') email: string) {
+  async requestPasswordReset(@Arg('email') email: string, @Ctx() { mailer, device }: AppContext) {
     const acc = await AccountModel.exists({ email })
+    // it's more secure to not to throw an error if account doesn't exists
 
     const resetTokenValidUntil = new Date(Date.now() + 36e5)
 
-    if (acc)
+    const token = nanoid()
+
+    if (acc) {
       AccountModel.findOneAndUpdate(
         acc,
         {
           resetTokenValidUntil,
-          resetToken: nanoid(),
+          resetToken: token,
         },
         { new: true }
       )
         .exec()
-        .then(console.log)
+        .then((acc) => {
+          mailer.sendPasswordReset({ to: acc.email, template: { token, timestamp: new Date(), device } })
+        })
+    }
 
     return resetTokenValidUntil
   }
