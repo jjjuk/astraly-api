@@ -34,7 +34,7 @@ passport.use(
     {
       clientID: globals.GOOGLE_CLIENT_ID,
       clientSecret: globals.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${globals.API_URL}auth/google/callback`,
+      callbackURL: `${globals.API_URL}/auth/google/callback`,
       scope: ['email'],
     },
     (_, __, profile, done) => {
@@ -54,7 +54,7 @@ passport.use(
     {
       consumerKey: globals.TW_CLIENT_ID,
       consumerSecret: globals.TW_CLIENT_SECRET,
-      callbackURL: `${globals.API_URL}auth/twitter/callback`,
+      callbackURL: `${globals.API_URL}/auth/twitter/callback`,
       includeEmail: true,
     },
     (_, __, profile, done) => {
