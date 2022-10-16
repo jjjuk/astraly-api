@@ -25,6 +25,7 @@ import { Strategy as TwitterStrategy } from 'passport-twitter'
 import serve from 'koa-static'
 import { join } from 'node:path'
 import mount from 'koa-mount'
+import session from 'koa-session'
 // import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
@@ -77,8 +78,11 @@ app.use(
     jsonLimit: '500mb',
   })
 )
+app.keys = ['secret']
+app.use(session({}, app))
 
 app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(mount('/api/static', serve(join(__dirname, '../static'))))
 
