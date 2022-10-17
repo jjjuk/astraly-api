@@ -1,5 +1,5 @@
 import { html } from 'common-tags'
-import { format, formatRelative } from 'date-fns'
+import { format } from 'date-fns'
 import { globals } from '../../Globals'
 
 export interface ResetPasswordArgs {
@@ -8,9 +8,10 @@ export interface ResetPasswordArgs {
   device: string
 }
 
-const resetPassword = ({ token, timestamp, device }: ResetPasswordArgs) => {
+const resetPassword = ({ token, timestamp, device }: ResetPasswordArgs): string => {
   const url = new URL(`${globals.APP_URL}/password-reset`)
   url.searchParams.set('token', token)
+  // console.log(url.toString())
   return html`<html>
     <head>
       <style type="text/css">

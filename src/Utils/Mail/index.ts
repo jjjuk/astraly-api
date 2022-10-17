@@ -28,6 +28,7 @@ export default class Mailer {
   public sendPasswordReset(args: SendPasswordResetArgs) {
     return this.transporter
       .sendMail({
+        from: 'no-reply@astraly.xyz',
         to: args.to,
         subject: 'Astraly Password Reset', // TODO: change it as you wish
         html: resetPassword(args.template),

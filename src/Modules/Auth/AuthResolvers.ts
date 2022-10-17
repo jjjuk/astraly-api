@@ -112,18 +112,20 @@ export class AuthResolvers {
     const token = nanoid()
 
     if (acc) {
-      AccountModel.findOneAndUpdate(
-        acc,
-        {
-          resetTokenValidUntil,
-          resetToken: token,
-        },
-        { new: true }
-      )
-        .exec()
-        .then((acc) => {
-          mailer.sendPasswordReset({ to: acc.email, template: { token, timestamp: new Date(), device } })
-        })
+      try {
+        const _acc = await AccountModel.findOneAndUpdate(
+          acc,
+          {
+            resetTokenValidUntil,
+            resetToken: token,
+          },
+          { new: true }
+        ).exec()
+        console.log(_acc.email)
+        await mailer.sendPasswordReset({ to: _acc.email, template: { token, timestamp: new Date(), device } })
+      } catch (err: any) {
+        console.error(err)
+      }
     }
 
     return resetTokenValidUntil
