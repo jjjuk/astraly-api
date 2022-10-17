@@ -97,6 +97,8 @@ export class AuthResolvers {
   async resetPassword(@Arg('token') token: string, @Arg('newPassword') newPassword: string) {
     const acc = await this.isTokenValid(token)
 
+    if (!acc) throw new Error('Invalid token')
+
     return !!(await acc.update({ password: hashSync(newPassword, 10) }))
   }
 
