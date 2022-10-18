@@ -13,7 +13,9 @@ import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
 import nanoid from 'nanoid'
-import { AppContext } from 'Utils/Types/context'
+import { AppContext } from '../../Utils/Types/context'
+import { ApolloError } from 'apollo-server-koa'
+import { validatePassword } from '../../Utils'
 
 export class AuthResolvers {
   @Query(() => String, { nullable: true })
@@ -55,11 +57,12 @@ export class AuthResolvers {
     @Arg('password') password: string,
     @Arg('address', { nullable: true }) address?: string
   ) {
-    if (await existsAccountByEmail(email)) throw new Error('User already exists')
+    if (!validatePassword(password)) throw new ApolloError('Invalid password', 'FORBIDDEN', { field: 'password' })
+    if (!isEmail(email)) throw new ApolloError('Invalid email', 'FORBIDDEN', { field: 'email' })
 
-    if (!isEmail(email)) throw new Error('Invalid email')
+    if (await existsAccountByEmail(email)) throw new ApolloError('User already exists', 'FORBIDDEN', { field: 'email' })
 
-    if (address && !(await AccountModel.exists({ address }))) throw new Error('Invalid address')
+    if (address && !(await AccountModel.exists({ address }))) throw new ApolloError('Invalid address', 'FORBIDDEN')
 
     const acc = !address
       ? await AccountModel.create({ email, password: hashSync(password, 10) })
@@ -74,7 +77,7 @@ export class AuthResolvers {
 
     const parsedAddress = acc?.address && getParsedAddress(acc.address)
 
-    if (!acc) throw new Error('Wrong password')
+    if (!acc) throw new ApolloError('Wrong password', 'FORBIDDEN', { field: 'password' })
 
     return jwt.sign({ data: parsedAddress ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }

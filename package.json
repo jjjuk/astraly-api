@@ -47,6 +47,7 @@
     "nodemailer": "^6.8.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-twitter": "^1.0.4",
+    "password-validator": "^5.3.0",
     "pino-pretty": "^8.0.0",
     "reflect-metadata": "^0.1.13",
     "starknet": "3.7.0",
