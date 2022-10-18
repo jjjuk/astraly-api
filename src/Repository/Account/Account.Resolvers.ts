@@ -7,6 +7,7 @@ import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { connectWalletToAccount } from './AccountService'
+import { AppContext } from 'Utils/Types/context'
 
 @Resolver()
 export class AccountResolvers {
@@ -19,9 +20,8 @@ export class AccountResolvers {
   @Mutation(() => Account)
   async updateAccount(@Arg('data') data: UpdateAccountInputType, @Ctx() { id }: Context): Promise<Account> {
     const { ...savableData } = data
-    const account = await AccountModel.findOne({
-      id,
-    }).exec()
+
+    const account = await AccountModel.findById(id).exec()
 
     const saveFile = async (field: 'cover' | 'avatar'): Promise<void> => {
       if (savableData[field]) {
@@ -49,35 +49,13 @@ export class AccountResolvers {
     savableData.cover !== undefined && (await saveFile('cover'))
     savableData.avatar !== undefined && (await saveFile('avatar'))
 
-    return await AccountModel.findOneAndUpdate(
-      {
-        id,
-      },
-      {
-        ...savableData,
-      },
-      {
-        new: true,
-      }
-    ).exec()
+    return await AccountModel.findByIdAndUpdate(id, { ...savableData }, { new: true }).exec()
   }
 
   @Authorized()
   @Query(() => Account)
-  async me(@Ctx() ctx: Context): Promise<Account> {
-    const { address, id } = ctx
-
-    console.log(ctx)
-
-    if (!address && !id) throw new Error('Invalid context of user')
-
-    const acc = await AccountModel.findOne(id ? { _id: id } : { address })
-      .populate('transactions')
-      .exec()
-
-    console.log(acc.toJSON())
-
-    return acc
+  me(@Ctx() { id }: AppContext): Promise<Account> {
+    return AccountModel.findById(id).exec()
   }
 
   @Query(() => Number)
@@ -88,11 +66,6 @@ export class AccountResolvers {
   @Query(() => Account, { nullable: true })
   getAccount(@Arg('address', { nullable: true }) address: string): Promise<Partial<Account>> {
     return address ? AccountModel.findOne({ address: getParsedAddress(address) }).exec() : null
-  }
-
-  @Query(() => [Account])
-  accounts() {
-    return AccountModel.find({}).exec()
   }
 
   @Authorized()

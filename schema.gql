@@ -151,7 +151,6 @@ enum ProjectType {
 }
 
 type Query {
-  accounts: [Account!]!
   getAccount(address: String): Account
   getMerkleProof(idoId: String!): [String!]!
   getNumberQuestsCompleted(idoId: String!): Float!

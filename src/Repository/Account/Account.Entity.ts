@@ -113,11 +113,6 @@ export class Account {
   resetToken?: string
   @prop({ required: false })
   resetTokenValidUntil?: Date
-
-  @prop({ required: false, sparse: true, unique: true })
-  twitterId?: string
-  @prop({ required: false, sparse: true, unique: true })
-  googleId?: string
 }
 
 export const AccountModel: ModelType<Account> = getModelForClass(Account, {

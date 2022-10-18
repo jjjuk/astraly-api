@@ -20,55 +20,18 @@ import Mailer from './Utils/Mail'
 
 import woothee from 'woothee'
 import passport from 'koa-passport'
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
-import { Strategy as TwitterStrategy } from 'passport-twitter'
+
 import serve from 'koa-static'
 import { join } from 'node:path'
 import mount from 'koa-mount'
 import session from 'koa-session'
+import { callbackMiddleware, googleStrategy, twitterStrategy } from './Utils/passport'
 // import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: globals.GOOGLE_CLIENT_ID,
-      clientSecret: globals.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${globals.API_URL}/auth/google/callback`,
-      scope: ['email'],
-    },
-    (_, __, profile, done) => {
-      AccountModel.findOneAndUpdate({ googleId: profile.id }, { email: profile.emails[0].value }, { upsert: true })
-        .exec()
-        .then((user) => {
-          const token = jwt.sign({ id: user.id, data: null }, globals.JWT_KEY, { expiresIn: '24h' })
-          done(null, { account: user.toObject(), token })
-        })
-        .catch(done)
-    }
-  )
-)
-
-passport.use(
-  new TwitterStrategy(
-    {
-      consumerKey: globals.TW_CLIENT_ID,
-      consumerSecret: globals.TW_CLIENT_SECRET,
-      callbackURL: `${globals.API_URL}/auth/twitter/callback`,
-      includeEmail: true,
-    },
-    (_, __, profile, done) => {
-      AccountModel.findOneAndUpdate({ twitterId: profile.id }, { email: profile.emails[0].value }, { upsert: true })
-        .exec()
-        .then((user) => {
-          const token = jwt.sign({ id: user.id, data: null }, globals.JWT_KEY, { expiresIn: '24h' })
-          done(null, { account: user.toObject(), token })
-        })
-        .catch(done)
-    }
-  )
-)
+passport.use(googleStrategy)
+passport.use(twitterStrategy)
 
 const app = new Koa()
 app.use(cors({ origin: '*' }))
@@ -98,7 +61,6 @@ const startServer = async (): Promise<void> => {
   const server = new ApolloServer({
     schema,
     context: async ({ ctx }) => {
-      console.log(ctx)
       let jwtToken = ctx?.request.headers.authorization || ''
 
       let address = ''
@@ -144,19 +106,11 @@ const startServer = async (): Promise<void> => {
 
   const apiRouter = new KoaRouter()
 
-  apiRouter.get('/api/auth/google', passport.authenticate('google'))
-  apiRouter.get('/api/auth/google/callback', passport.authenticate('google', { session: false }), (ctx) => {
-    const url = new URL(`${globals.APP_URL}/set-auth-token`)
-    url.searchParams.set('token', ctx.state.user.token)
-    ctx.response.redirect(url.toString())
-  })
+  apiRouter.get('/api/auth/google', passport.authenticate('google', { session: false }))
+  apiRouter.get('/api/auth/google/callback', passport.authenticate('google', { session: false }), callbackMiddleware)
 
-  apiRouter.get('/api/auth/twitter', passport.authenticate('twitter'))
-  apiRouter.get('/api/auth/twitter/callback', passport.authenticate('twitter', { session: false }), (ctx) => {
-    const url = new URL(`${globals.APP_URL}/set-auth-token`)
-    url.searchParams.set('token', ctx.state.user.token)
-    ctx.response.redirect(url.toString())
-  })
+  apiRouter.get('/api/auth/twitter', passport.authenticate('twitter', { session: false }))
+  apiRouter.get('/api/auth/twitter/callback', passport.authenticate('twitter', { session: false }), callbackMiddleware)
 
   apiRouter.get('/api', (ctx) => {
     ctx.body = 'hello captain'

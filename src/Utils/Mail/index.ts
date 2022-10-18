@@ -1,5 +1,5 @@
 import { createTransport, Transporter } from 'nodemailer'
-import resetPassword, { ResetPasswordArgs } from './templates/resetPassword'
+import resetPassword, { ResetPasswordArgs, attachments as resetAttachments } from './templates/resetPassword'
 
 export interface MailerProps {
   username: string
@@ -32,6 +32,7 @@ export default class Mailer {
         to: args.to,
         subject: 'Astraly Password Reset', // TODO: change it as you wish
         html: resetPassword(args.template),
+        attachments: resetAttachments,
       })
       .catch(console.error)
   }
