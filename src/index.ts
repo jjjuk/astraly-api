@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 import 'reflect-metadata'
-import Koa from 'koa'
+import Koa, { Request } from 'koa'
 import KoaRouter from '@koa/router'
 import bodyParser from 'koa-bodyparser'
 import cors from '@koa/cors'
@@ -16,21 +16,43 @@ import { initGlobals } from './Utils/Globals/init'
 import { generateQuestsData } from './Utils/Seed/generateQuestsData'
 import { generateProjects } from './Utils/Seed/generateProjects'
 import { AccountModel, SocialLinkType } from './Repository/Account/Account.Entity'
+import Mailer from './Utils/Mail'
+
+import woothee from 'woothee'
+import passport from 'koa-passport'
+
+import serve from 'koa-static'
+import { join } from 'node:path'
+import mount from 'koa-mount'
+import session from 'koa-session'
+import { callbackMiddleware, googleStrategy, twitterStrategy } from './Utils/passport'
 // import { validateAndParseAddress } from 'starknet'
 
 void initGlobals()
 
+passport.use(googleStrategy)
+passport.use(twitterStrategy)
+
 const app = new Koa()
-app.use(cors())
+app.use(cors({ origin: '*' }))
 app.use(
   bodyParser({
     formLimit: '500mb',
     jsonLimit: '500mb',
   })
 )
+app.keys = ['secret']
+app.use(session({}, app))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use(mount('/api/static', serve(join(__dirname, '../static'))))
 
 const argv = process.argv.slice(2) || []
 const command = argv[0]
+
+const mailer = new Mailer({ username: globals.MAILGUN_USERNAME, password: globals.MAILGUN_SMTP_PASSWORD })
 
 const startServer = async (): Promise<void> => {
   await connectToDb(globals.DB_HOST, globals.DB_NAME)
@@ -42,13 +64,16 @@ const startServer = async (): Promise<void> => {
       let jwtToken = ctx?.request.headers.authorization || ''
 
       let address = ''
+      let id = ''
 
       if (jwtToken) {
         try {
           jwtToken = jwtToken.replace('Bearer ', '')
-          const { data } = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
-          address = data
+          const payload = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
+          address = payload.data
+          id = payload.id
         } catch (e) {
+          console.error(e)
           console.error('CTX, INVALID JWT')
         }
       }
@@ -56,6 +81,17 @@ const startServer = async (): Promise<void> => {
       return {
         jwtToken,
         address,
+        id,
+        get mailer() {
+          return mailer
+        },
+        get device() {
+          if ((ctx.request as Request).header?.['user-agent']) {
+            return woothee.parse(ctx.request.header['user-agent']).os
+          }
+
+          return 'Unknown Device'
+        },
       }
     },
   })
@@ -69,6 +105,12 @@ const startServer = async (): Promise<void> => {
   server.applyMiddleware({ app, path: `/api${server.graphqlPath}` })
 
   const apiRouter = new KoaRouter()
+
+  apiRouter.get('/api/auth/google', passport.authenticate('google', { session: false }))
+  apiRouter.get('/api/auth/google/callback', passport.authenticate('google', { session: false }), callbackMiddleware)
+
+  apiRouter.get('/api/auth/twitter', passport.authenticate('twitter', { session: false }))
+  apiRouter.get('/api/auth/twitter/callback', passport.authenticate('twitter', { session: false }), callbackMiddleware)
 
   apiRouter.get('/api', (ctx) => {
     ctx.body = 'hello captain'
@@ -121,7 +163,7 @@ const startServer = async (): Promise<void> => {
 
   app.use(apiRouter.routes()).use(apiRouter.allowedMethods())
 
-  await initCheckpoint()
+  // await initCheckpoint()
 }
 
 if (command === 'generateQuests') {

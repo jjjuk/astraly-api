@@ -48,19 +48,23 @@ export class Account {
 
   @Field({ nullable: true })
   @prop({
-    required: true,
     unique: true,
     index: true,
+    sparse: true,
   })
-  address!: string
+  address?: string
+  //addresses: string[]
 
   @Field({ nullable: true })
-  @prop()
+  @prop({ sparse: true })
   alias?: string
 
   @UseMiddleware(OnlySelfOrAdmin)
   @Field({ nullable: true })
-  @prop()
+  @prop({
+    unique: true,
+    sparse: true,
+  })
   email?: string
 
   @Field({ nullable: true })
@@ -101,6 +105,14 @@ export class Account {
   @Field(() => [SocialLink], { nullable: true })
   @prop({ type: () => [SocialLink] })
   socialLinks: SocialLink[]
+
+  @prop({ required: false })
+  password?: string
+
+  @prop({ required: false })
+  resetToken?: string
+  @prop({ required: false })
+  resetTokenValidUntil?: Date
 }
 
 export const AccountModel: ModelType<Account> = getModelForClass(Account, {

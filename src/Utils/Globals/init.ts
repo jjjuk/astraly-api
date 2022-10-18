@@ -12,6 +12,15 @@ export const initGlobals = async (): Promise<void> => {
   globals.API_URL = process.env.API_URL
   globals.JWT_KEY = process.env.JWT_SECRET
 
+  globals.GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID
+  globals.GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET
+
+  globals.TW_CLIENT_ID = process.env.TW_CLIENT_ID
+  globals.TW_CLIENT_SECRET = process.env.TW_CLIENT_SECRET
+
+  globals.MAILGUN_USERNAME = process.env.MAILGUN_USERNAME
+  globals.MAILGUN_SMTP_PASSWORD = process.env.MAILGUN_SMTP_PASSWORD
+
   if (process.env.S3_ENDPOINT && process.env.S3_ACCESS_KEY && process.env.S3_SECRET_KEY) {
     const spacesEndpoint = new aws.Endpoint(process.env.S3_ENDPOINT)
 

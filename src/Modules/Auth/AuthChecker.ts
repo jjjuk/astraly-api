@@ -9,13 +9,13 @@ export enum UserAccess {
 }
 
 export const appAuthChecker: AuthChecker<AppContext, UserAccess> = ({ context }, roles: UserAccess[]) => {
-  const { address } = context
+  const { id } = context
 
-  return hasUserAccess(address, roles)
+  return hasUserAccess(id, roles)
 }
 
-export const hasUserAccess = (address: string | null | undefined, roles: UserAccess[]): boolean => {
-  if (!address) {
+export const hasUserAccess = (id: string | null | undefined, roles: UserAccess[]): boolean => {
+  if (!id) {
     return false
   }
 
@@ -23,5 +23,5 @@ export const hasUserAccess = (address: string | null | undefined, roles: UserAcc
     return true
   }
 
-  return globals.AdminAddresses.includes(address)
+  return globals.AdminAddresses.includes(id)
 }

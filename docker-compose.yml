@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  mongo:
+    image: mongo:4.2.23-rc1-bionic
+    volumes:
+      - 'mongo:/bitnami/mongodb'
+    ports: 
+      - '27017:27017'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MONGODB_ENABLE_JOURNAL=true
+      - MONGODB_DATABASE="zkpad-dev"
+
   mysql:
     image: arm64v8/mysql:oracle
     command: --default-authentication-plugin=mysql_native_password
@@ -18,8 +29,11 @@ services:
       - '9000:9000'
     environment:
       - MINIO_API_CORS_ALLOW_ORIGIN=*
+      - MINIO_DEFAULT_BUCKETS=zkpad
     volumes:
       - ./data:/data
 volumes:
   mysql:
+    driver: local
+  mongo:
     driver: local

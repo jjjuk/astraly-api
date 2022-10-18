@@ -57,10 +57,16 @@ type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
   linkSocial(id: String, type: String!): Account!
+  linkWallet(address: String!): Account!
+  login(email: String!, password: String!): String!
   newsletter(email: String!, form: String = "footer"): Boolean!
+  requestPasswordReset(email: String!): DateTime!
+  resetPassword(newPassword: String!, token: String!): Boolean!
+  signup(address: String, email: String!, password: String!): String!
   updateAccount(data: UpdateAccountInputType!): Account!
   updateProject(data: ProjectInput!): Project
   updateQuest(data: QuestInput!): Quest!
+  validateResetToken(token: String!): Boolean!
 }
 
 type OrganizedEvent {
@@ -145,10 +151,10 @@ enum ProjectType {
 }
 
 type Query {
-  getAccount(address: String!): Account
+  getAccount(address: String): Account
   getMerkleProof(idoId: String!): [String!]!
   getNumberQuestsCompleted(idoId: String!): Float!
-  getToken(address: String!): String!
+  getToken(address: String!): String
   getTwitterAuthUrl: String!
   getUploadUrl(fileType: String!): JSON!
   getUploadUrlAdmin(fileType: String!): JSON!
