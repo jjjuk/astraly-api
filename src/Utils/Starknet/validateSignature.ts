@@ -2,8 +2,9 @@ import { AccountModel } from '../../Repository/Account/Account.Entity'
 import ethUtil from 'ethereumjs-util'
 import sigUtil from 'eth-sig-util'
 import { areKeysEqual } from '../index'
-import { Account, defaultProvider, Signature } from 'starknet'
+import { Contract, defaultProvider, Signature } from 'starknet'
 import { BigNumberish } from 'starknet/dist/utils/number'
+import { ACCOUNT_ABI } from '../constants/abi'
 
 export interface SignedData {
   hash: BigNumberish
@@ -11,16 +12,14 @@ export interface SignedData {
 }
 
 export const validateStarknetSignature = async (publicKey: string, signedData: SignedData): Promise<boolean> => {
-  const account = await AccountModel.findOne({
-    address: publicKey.toLowerCase(),
-  }).exec()
-
-  if (!account) {
+  try {
+    const _account = new Contract(ACCOUNT_ABI, publicKey, defaultProvider)
+    await _account.call('is_valid_signature', [signedData.hash, signedData.signature])
+    return true
+  } catch (error) {
+    console.error(error)
     return false
   }
-
-  const _account = new Account(defaultProvider, publicKey, null)
-  return await _account.verifyMessageHash(signedData.hash, signedData.signature)
 }
 
 export const validateEVMSignature = async (

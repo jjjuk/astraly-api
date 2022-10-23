@@ -127,7 +127,7 @@ export class AccountResolvers {
     // Check signature
     const isValid = await validateStarknetSignature(address, signedData)
 
-    if (!isValid) return null
+    if (!isValid) throw new Error('Invalid signature provided.')
 
     return await connectWalletToAccount(id, getParsedAddress(address))
   }
