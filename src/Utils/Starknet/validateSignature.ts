@@ -2,8 +2,28 @@ import { AccountModel } from '../../Repository/Account/Account.Entity'
 import ethUtil from 'ethereumjs-util'
 import sigUtil from 'eth-sig-util'
 import { areKeysEqual } from '../index'
+import { Account, defaultProvider, Signature } from 'starknet'
+import { BigNumberish } from 'starknet/dist/utils/number'
 
-export const validateSignature = async (
+export interface SignedData {
+  hash: BigNumberish
+  signature: Signature
+}
+
+export const validateStarknetSignature = async (publicKey: string, signedData: SignedData): Promise<boolean> => {
+  const account = await AccountModel.findOne({
+    address: publicKey.toLowerCase(),
+  }).exec()
+
+  if (!account) {
+    return false
+  }
+
+  const _account = new Account(defaultProvider, publicKey, null)
+  return await _account.verifyMessageHash(signedData.hash, signedData.signature)
+}
+
+export const validateEVMSignature = async (
   publicKey: string,
   signature: string,
   retrievedPublicKey: string

@@ -8,6 +8,7 @@ import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { connectWalletToAccount } from './AccountService'
 import { AppContext } from 'Utils/Types/context'
+import { SignedData, validateStarknetSignature } from 'Utils/Starknet/validateSignature'
 
 @Resolver()
 export class AccountResolvers {
@@ -54,18 +55,18 @@ export class AccountResolvers {
 
   @Authorized()
   @Query(() => Account)
-  me(@Ctx() { id }: AppContext): Promise<Account> {
-    return AccountModel.findById(id).exec()
+  async me(@Ctx() { id }: AppContext): Promise<Account> {
+    return await AccountModel.findById(id).exec()
   }
 
   @Query(() => Number)
-  total(): Promise<number> {
-    return AccountModel.countDocuments().exec()
+  async total(): Promise<number> {
+    return await AccountModel.countDocuments().exec()
   }
 
   @Query(() => Account, { nullable: true })
-  getAccount(@Arg('address', { nullable: true }) address: string): Promise<Partial<Account>> {
-    return address ? AccountModel.findOne({ address: getParsedAddress(address) }).exec() : null
+  async getAccount(@Arg('address', { nullable: true }) address: string): Promise<Partial<Account>> {
+    return address ? await AccountModel.findOne({ address: getParsedAddress(address) }).exec() : null
   }
 
   @Authorized()
@@ -118,7 +119,16 @@ export class AccountResolvers {
 
   @Authorized()
   @Mutation(() => Account)
-  linkWallet(@Ctx() { id }: Context, @Arg('address') address: string) {
-    return connectWalletToAccount(id, getParsedAddress(address))
+  async linkWallet(
+    @Ctx() { id }: Context,
+    @Arg('signedData') signedData: SignedData,
+    @Arg('address') address: string
+  ): Promise<DocumentType<Account>> {
+    // Check signature
+    const isValid = await validateStarknetSignature(address, signedData)
+
+    if (!isValid) return null
+
+    return await connectWalletToAccount(id, getParsedAddress(address))
   }
 }

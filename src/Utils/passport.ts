@@ -10,7 +10,7 @@ import { initGlobals } from './Globals/init'
 
 void initGlobals()
 
-const getProfile = (_: string, __: string, profile: GoogleProfile & TwitterProfile, done: VerifyCallback) => {
+const getProfile = (_: string, __: string, profile: GoogleProfile & TwitterProfile, done: VerifyCallback): void => {
   if (!profile.emails[0].value) done(new Error("Can't get account email"))
 
   AccountModel.findOneAndUpdate({ email: profile.emails[0].value }, {}, { upsert: true, new: true })

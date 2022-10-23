@@ -7,7 +7,7 @@ const config = {
     url: process.env.DB_URL,
 
     // TODO Change this to your database name:
-    databaseName: 'zkpad-db',
+    databaseName: 'zkpad-dev',
 
     options: {
       useNewUrlParser: true, // removes a deprecation warning when connecting
