@@ -9,7 +9,7 @@ import { globals } from '../../Utils/Globals'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { UserAccess } from './AuthChecker'
 import isEmail from 'validator/lib/isEmail'
-import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
+import { AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
 import nanoid from 'nanoid'

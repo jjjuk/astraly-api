@@ -131,4 +131,10 @@ export class AccountResolvers {
 
     return await connectWalletToAccount(id, getParsedAddress(address))
   }
+
+  @Authorized()
+  @Mutation(() => Account)
+  async unlinkWallet(@Ctx() { id }: Context): Promise<DocumentType<Account>> {
+    return await AccountModel.findOneAndUpdate({ _id: id }, { address: null }, { new: true })
+  }
 }
