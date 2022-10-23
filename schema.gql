@@ -57,7 +57,7 @@ type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
   linkSocial(id: String, type: String!): Account!
-  linkWallet(address: String!): Account!
+  linkWallet(address: String!, signedData: SignedDataInputType!): Account!
   login(email: String!, password: String!): String!
   newsletter(email: String!, form: String = "footer"): Boolean!
   requestPasswordReset(email: String!): DateTime!
@@ -213,6 +213,11 @@ input RoundInput {
   endDate: DateTime
   startDate: DateTime
   title: String
+}
+
+input SignedDataInputType {
+  hash: String!
+  signature: [String!]!
 }
 
 type SocialLink {

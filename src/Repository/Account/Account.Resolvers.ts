@@ -1,14 +1,14 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql'
 import { Account, AccountModel, SocialLinkType } from './Account.Entity'
 import { Context } from 'koa'
-import { UpdateAccountInputType } from './AccountInputTypes'
+import { SignedDataInputType, UpdateAccountInputType } from './AccountInputTypes'
 import { AppFileModel } from '../File/File.Entity'
 import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { connectWalletToAccount } from './AccountService'
 import { AppContext } from 'Utils/Types/context'
-import { SignedData, validateStarknetSignature } from 'Utils/Starknet/validateSignature'
+import { validateStarknetSignature } from '../../Utils/Starknet/validateSignature'
 
 @Resolver()
 export class AccountResolvers {
@@ -121,7 +121,7 @@ export class AccountResolvers {
   @Mutation(() => Account)
   async linkWallet(
     @Ctx() { id }: Context,
-    @Arg('signedData') signedData: SignedData,
+    @Arg('signedData') signedData: SignedDataInputType,
     @Arg('address') address: string
   ): Promise<DocumentType<Account>> {
     // Check signature

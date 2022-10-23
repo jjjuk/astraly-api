@@ -53,7 +53,6 @@ export class Account {
     sparse: true,
   })
   address?: string
-  //addresses: string[]
 
   @Field({ nullable: true })
   @prop({ sparse: true })
@@ -111,6 +110,7 @@ export class Account {
 
   @prop({ required: false })
   resetToken?: string
+
   @prop({ required: false })
   resetTokenValidUntil?: Date
 }
