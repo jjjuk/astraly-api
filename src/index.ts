@@ -79,6 +79,7 @@ const startServer = async (): Promise<void> => {
       }
 
       return {
+        headers: ctx?.request.headers,
         jwtToken,
         address,
         id,

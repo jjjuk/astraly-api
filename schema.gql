@@ -15,6 +15,7 @@ type Account {
   email: String
   hasClaimedTickets: Boolean
   questCompleted: [Quest!]
+  referralCode: String
   socialLinks: [SocialLink!]
   transactions: [Transaction!]
 }

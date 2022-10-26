@@ -6,6 +6,7 @@ import { Transaction } from '../Transaction/Transaction.Entity'
 import { ModelType } from '@typegoose/typegoose/lib/types'
 import { AppFile } from '../File/File.Entity'
 import { OnlySelfOrAdmin } from '../../Utils/GraphQl'
+import { Schema } from 'mongoose'
 
 export enum SocialLinkType {
   DISCORD = 'DISCORD',
@@ -90,6 +91,9 @@ export class Account {
   @Field(() => [Quest], { nullable: true })
   @prop({ ref: 'Quest' })
   questCompleted?: Array<Ref<Quest>>
+
+  @prop({ type: Schema.Types.ObjectId, ref: 'Account' })
+  broughtBy: Ref<Account>
 
   @Field(() => [Transaction], { nullable: true })
   @prop({ ref: 'Transaction' })

@@ -5,6 +5,8 @@ import { AppFileModel } from '../File/File.Entity'
 import { isBefore } from 'date-fns'
 import { globals } from '../../Utils/Globals'
 
+import { AES } from 'crypto-js'
+
 @Resolver(() => Account)
 export class AccountFieldResolvers {
   // TODO: add cache policy
@@ -16,6 +18,11 @@ export class AccountFieldResolvers {
   @FieldResolver(() => String, { nullable: true })
   async avatar (@Root() account: DocumentType<Account>): Promise<string | null> {
     return await this._fileFieldResolver(account, 'avatar')
+  }
+
+  @FieldResolver(() => String, { nullable: true })
+  referralCode (@Root() account: DocumentType<Account>): string | null {
+    return AES.encrypt(account.id, globals.REFERRAL_SECRET).toString()
   }
 
   @FieldResolver(() => [SocialLink], { nullable: true })

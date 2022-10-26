@@ -17,6 +17,8 @@ import { AppContext } from '../../Utils/Types/context'
 import { ApolloError } from 'apollo-server-koa'
 import { validatePassword } from '../../Utils'
 
+import { enc, AES } from 'crypto-js'
+
 export class AuthResolvers {
   @Query(() => String, { nullable: true })
   async getToken(@Arg('address') address: string): Promise<string> {
@@ -55,6 +57,7 @@ export class AuthResolvers {
   async signup(
     @Arg('email') email: string,
     @Arg('password') password: string,
+    @Ctx() ctx: AppContext,
     @Arg('address', { nullable: true }) address?: string
   ) {
     if (!validatePassword(password)) throw new ApolloError('Invalid password', 'FORBIDDEN', { field: 'password' })
@@ -64,9 +67,19 @@ export class AuthResolvers {
 
     if (address && !(await AccountModel.exists({ address }))) throw new ApolloError('Invalid address', 'FORBIDDEN')
 
+    let broughtBy = ''
+
+    if (typeof ctx.headers?.['x-referral-code'] === 'string') {
+      broughtBy = AES.decrypt(ctx.headers['x-referral-code'], globals.REFERRAL_SECRET).toString(enc.Utf8)
+    }
+
     const acc = !address
-      ? await AccountModel.create({ email, password: hashSync(password, 10) })
-      : await AccountModel.findOneAndUpdate({ address }, { email, password: hashSync(password, 10) }, { new: true })
+      ? await AccountModel.create({ email, password: hashSync(password, 10), ...(broughtBy ? { broughtBy } : {}) })
+      : await AccountModel.findOneAndUpdate(
+          { address },
+          { email, password: hashSync(password, 10), ...(broughtBy ? { broughtBy } : {}) },
+          { new: true }
+        )
 
     return jwt.sign({ data: acc.address ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }

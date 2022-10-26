@@ -15,6 +15,8 @@ export class Globals {
   MAILGUN_USERNAME = ''
   MAILGUN_SMTP_PASSWORD= ''
 
+  REFERRAL_SECRET=''
+
   JWT_KEY = 'My_key'
   PORT = '4002'
   HOST = 'localhost'

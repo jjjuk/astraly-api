@@ -21,6 +21,8 @@ export const initGlobals = async (): Promise<void> => {
   globals.MAILGUN_USERNAME = process.env.MAILGUN_USERNAME
   globals.MAILGUN_SMTP_PASSWORD = process.env.MAILGUN_SMTP_PASSWORD
 
+  globals.REFERRAL_SECRET = process.env.REFERRAL_SECRET
+
   if (process.env.S3_ENDPOINT && process.env.S3_ACCESS_KEY && process.env.S3_SECRET_KEY) {
     const spacesEndpoint = new aws.Endpoint(process.env.S3_ENDPOINT)
 
