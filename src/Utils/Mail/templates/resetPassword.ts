@@ -72,7 +72,6 @@ const resetPassword = ({ token, timestamp, device }: ResetPasswordArgs): string 
                 padding: 32px;
                 border-radius: 32px;
                 margin-bottom: -200px;
-
                 font-family: Avenir Next, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
                   Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
                   'Segoe UI Symbol', 'Noto Color Emoji';
