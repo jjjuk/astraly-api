@@ -1,5 +1,8 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from 'type-graphql'
 import jwt from 'jsonwebtoken'
+import isEmail from 'validator/lib/isEmail'
+import { DocumentType } from '@typegoose/typegoose'
+import { ApolloError } from 'apollo-server-koa'
 import {
   connectWalletToAccount,
   createAccountByAddress,
@@ -9,14 +12,15 @@ import {
 import { globals } from '../../Utils/Globals'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { UserAccess } from './AuthChecker'
-import isEmail from 'validator/lib/isEmail'
-import { AccountModel } from '../../Repository/Account/Account.Entity'
+import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
 import nanoid from 'nanoid'
 import { AppContext } from '../../Utils/Types/context'
-import { ApolloError } from 'apollo-server-koa'
 import { validatePassword } from '../../Utils'
+import { validateStarknetSignature } from '../../Utils/Starknet/validateSignature'
+import { SignedDataInputType } from './AuthInputTypes'
+import { ApolloErrors } from '../../Utils/Types'
 
 export class AuthResolvers {
   @Query(() => String, { nullable: true })
@@ -44,7 +48,7 @@ export class AuthResolvers {
       ? jwt.sign(
           {
             id: acc.id,
-            data: parsedAddress,
+            address: parsedAddress,
           },
           globals.JWT_KEY,
           { expiresIn: '24h' }
@@ -69,7 +73,7 @@ export class AuthResolvers {
       ? await AccountModel.create({ email, password: hashSync(password, 10) })
       : await AccountModel.findOneAndUpdate({ address }, { email, password: hashSync(password, 10) }, { new: true })
 
-    return jwt.sign({ data: acc.address ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
+    return jwt.sign({ address: acc.address ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
 
   @Mutation(() => String)
@@ -80,7 +84,7 @@ export class AuthResolvers {
 
     if (!acc) throw new ApolloError('Wrong password', 'FORBIDDEN', { field: 'password' })
 
-    return jwt.sign({ data: parsedAddress ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
+    return jwt.sign({ address: parsedAddress ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
 
   /**
@@ -98,12 +102,15 @@ export class AuthResolvers {
   }
 
   @Mutation(() => Boolean)
-  async resetPassword(@Arg('token') token: string, @Arg('newPassword') newPassword: string) {
+  async resetPassword(@Arg('token') token: string, @Arg('newPassword') password: string) {
+    if (!validatePassword(password))
+      throw new ApolloError('Invalid password', ApolloErrors.FORBIDDEN, { field: 'password' })
+
     const acc = await this.isTokenValid(token)
 
     if (!acc) throw new Error('Invalid token')
 
-    return !!(await acc.update({ password: hashSync(newPassword, 10) }))
+    return !!(await acc.update({ password: hashSync(password, 10) }))
   }
 
   @Mutation(() => Date)
@@ -137,9 +144,24 @@ export class AuthResolvers {
 
   @Authorized()
   @Mutation(() => String)
-  async linkWallet(@Ctx() { id }: AppContext, @Arg('address') address: string) {
+  async linkWallet(
+    @Ctx() { id }: AppContext,
+    @Arg('address') address: string,
+    @Arg('signedData') signedData: SignedDataInputType
+  ): Promise<String> {
+    const isValid = await validateStarknetSignature(address, signedData)
+    if (!isValid) throw new Error('Invalid signature provided.')
+
     const acc = await connectWalletToAccount(id, getParsedAddress(address))
-    return jwt.sign({ data: acc.address, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
+
+    return jwt.sign({ address: acc.address, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async unlinkWallet(@Ctx() { id }: AppContext): Promise<String> {
+    const acc = await AccountModel.findByIdAndUpdate(id, { address: null }, { new: true })
+    return jwt.sign({ address: null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
 
   private async isTokenValid(token: string) {

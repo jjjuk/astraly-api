@@ -35,7 +35,7 @@ export class ProjectFieldResolvers {
   @FieldResolver(() => String, { nullable: true })
   referralCode(@Root() project: DocumentType<Project>, @Ctx() ctx: AppContext): string | null {
     if (!ctx.address) return null
-    return AES.encrypt(project.id + ':' + ctx.id, globals.REFERRAL_SECRET).toString()
+    return AES.encrypt(project.idoId + ':' + ctx.id, globals.REFERRAL_SECRET).toString()
   }
 
   async _fileFieldResolver(

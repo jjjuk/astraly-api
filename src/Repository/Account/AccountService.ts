@@ -9,8 +9,8 @@ export const createAccountByAddress = async (address: string) => {
   } else return null
 }
 
-export const connectWalletToAccount = (_id: string, address: string) => {
-  return AccountModel.findOneAndUpdate({ _id }, { address }, { new: true })
+export const connectWalletToAccount = (id: string, address: string) => {
+  return AccountModel.findByIdAndUpdate(id, { address }, { new: true })
 }
 
 export const existsAccountByEmail = async (email: string): Promise<boolean> => {

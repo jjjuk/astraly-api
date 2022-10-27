@@ -70,7 +70,7 @@ const startServer = async (): Promise<void> => {
         try {
           jwtToken = jwtToken.replace('Bearer ', '')
           const payload = jwt.verify(jwtToken, globals.JWT_KEY) as JwtPayload
-          address = payload.data
+          address = payload.address
           id = payload.id
         } catch (e) {
           console.error(e)

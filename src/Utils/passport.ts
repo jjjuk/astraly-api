@@ -44,7 +44,7 @@ export const callbackMiddleware: Middleware = (ctx) => {
 
   url.searchParams.set(
     'token',
-    jwt.sign({ id: ctx.state.user._id, data: ctx.state.user.address || null }, globals.JWT_KEY, {
+    jwt.sign({ id: ctx.state.user._id, address: ctx.state.user.address || null }, globals.JWT_KEY, {
       expiresIn: '24h',
     })
   )

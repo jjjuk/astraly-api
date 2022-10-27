@@ -91,9 +91,6 @@ export class Account {
   @prop({ ref: 'Quest' })
   questCompleted?: Array<Ref<Quest>>
 
-  @prop({ type: Schema.Types.ObjectId, ref: 'Account' })
-  broughtBy: Ref<Account>
-
   @Field(() => [Transaction], { nullable: true })
   @prop({ ref: 'Transaction' })
   transactions?: Array<Ref<Transaction>>
