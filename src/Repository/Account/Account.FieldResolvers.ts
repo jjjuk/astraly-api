@@ -16,21 +16,18 @@ export class AccountFieldResolvers {
   }
 
   @FieldResolver(() => String, { nullable: true })
-  async avatar (@Root() account: DocumentType<Account>): Promise<string | null> {
+  async avatar(@Root() account: DocumentType<Account>): Promise<string | null> {
     return await this._fileFieldResolver(account, 'avatar')
   }
 
-  @FieldResolver(() => String, { nullable: true })
-  referralCode (@Root() account: DocumentType<Account>): string | null {
-    return AES.encrypt(account.id, globals.REFERRAL_SECRET).toString()
-  }
-
   @FieldResolver(() => [SocialLink], { nullable: true })
-  async socialLinks (@Root() account: DocumentType<Account>): Promise<SocialLink[]> {
-    return account.socialLinks ? account.socialLinks.filter(x => !x.validUntil || isBefore(new Date(), x.validUntil)) : []
+  async socialLinks(@Root() account: DocumentType<Account>): Promise<SocialLink[]> {
+    return account.socialLinks
+      ? account.socialLinks.filter((x) => !x.validUntil || isBefore(new Date(), x.validUntil))
+      : []
   }
 
-  async _fileFieldResolver (account: DocumentType<Account>, field: 'cover' | 'avatar'): Promise<string | null> {
+  async _fileFieldResolver(account: DocumentType<Account>, field: 'cover' | 'avatar'): Promise<string | null> {
     if (!account[field]) {
       return null
     }

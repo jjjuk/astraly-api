@@ -15,7 +15,6 @@ type Account {
   email: String
   hasClaimedTickets: Boolean
   questCompleted: [Quest!]
-  referralCode: String
   socialLinks: [SocialLink!]
   transactions: [Transaction!]
 }
@@ -58,7 +57,7 @@ type Mutation {
   addContact(email: String!): Boolean!
   completeQuest(questId: String!): Quest
   linkSocial(id: String, type: String!): Account!
-  linkWallet(address: String!): Account!
+  linkWallet(address: String!): String!
   login(email: String!, password: String!): String!
   newsletter(email: String!, form: String = "footer"): Boolean!
   requestPasswordReset(email: String!): DateTime!
@@ -99,6 +98,7 @@ type Project {
   name: String
   projectDescription: [ProjectDescriptionItem!]
   quests: [Quest!]
+  referralCode: String
   rounds: [Round!]
   ticker: String
   tokenAddress: String

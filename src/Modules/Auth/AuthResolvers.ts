@@ -1,6 +1,7 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from 'type-graphql'
 import jwt from 'jsonwebtoken'
 import {
+  connectWalletToAccount,
   createAccountByAddress,
   existsAccountByEmail,
   getAccountByEmailAndPassword,
@@ -57,7 +58,6 @@ export class AuthResolvers {
   async signup(
     @Arg('email') email: string,
     @Arg('password') password: string,
-    @Ctx() ctx: AppContext,
     @Arg('address', { nullable: true }) address?: string
   ) {
     if (!validatePassword(password)) throw new ApolloError('Invalid password', 'FORBIDDEN', { field: 'password' })
@@ -67,19 +67,9 @@ export class AuthResolvers {
 
     if (address && !(await AccountModel.exists({ address }))) throw new ApolloError('Invalid address', 'FORBIDDEN')
 
-    let broughtBy = ''
-
-    if (typeof ctx.headers?.['x-referral-code'] === 'string') {
-      broughtBy = AES.decrypt(ctx.headers['x-referral-code'], globals.REFERRAL_SECRET).toString(enc.Utf8)
-    }
-
     const acc = !address
-      ? await AccountModel.create({ email, password: hashSync(password, 10), ...(broughtBy ? { broughtBy } : {}) })
-      : await AccountModel.findOneAndUpdate(
-          { address },
-          { email, password: hashSync(password, 10), ...(broughtBy ? { broughtBy } : {}) },
-          { new: true }
-        )
+      ? await AccountModel.create({ email, password: hashSync(password, 10) })
+      : await AccountModel.findOneAndUpdate({ address }, { email, password: hashSync(password, 10) }, { new: true })
 
     return jwt.sign({ data: acc.address ?? null, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
@@ -145,6 +135,13 @@ export class AuthResolvers {
     }
 
     return resetTokenValidUntil
+  }
+
+  @Authorized()
+  @Mutation(() => String)
+  async linkWallet(@Ctx() { id }: AppContext, @Arg('address') address: string) {
+    const acc = await connectWalletToAccount(id, getParsedAddress(address))
+    return jwt.sign({ data: acc.address, id: acc.id }, globals.JWT_KEY, { expiresIn: '24h' })
   }
 
   private async isTokenValid(token: string) {
