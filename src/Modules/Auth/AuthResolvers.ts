@@ -10,15 +10,13 @@ import { globals } from '../../Utils/Globals'
 import { getParsedAddress } from '../../Utils/Starknet'
 import { UserAccess } from './AuthChecker'
 import isEmail from 'validator/lib/isEmail'
-import { Account, AccountModel } from '../../Repository/Account/Account.Entity'
+import { AccountModel } from '../../Repository/Account/Account.Entity'
 import { hashSync } from 'bcrypt'
 
 import nanoid from 'nanoid'
 import { AppContext } from '../../Utils/Types/context'
 import { ApolloError } from 'apollo-server-koa'
 import { validatePassword } from '../../Utils'
-
-import { enc, AES } from 'crypto-js'
 
 export class AuthResolvers {
   @Query(() => String, { nullable: true })

@@ -63,6 +63,7 @@ type Mutation {
   requestPasswordReset(email: String!): DateTime!
   resetPassword(newPassword: String!, token: String!): Boolean!
   signup(address: String, email: String!, password: String!): String!
+  unlinkWallet: Account!
   updateAccount(data: UpdateAccountInputType!): Account!
   updateProject(data: ProjectInput!): Project
   updateQuest(data: QuestInput!): Quest!
@@ -214,6 +215,11 @@ input RoundInput {
   endDate: DateTime
   startDate: DateTime
   title: String
+}
+
+input SignedDataInputType {
+  hash: String!
+  signature: [String!]!
 }
 
 type SocialLink {

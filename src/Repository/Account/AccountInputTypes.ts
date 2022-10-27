@@ -20,3 +20,12 @@ export class UpdateAccountInputType {
   @Field({ nullable: true })
   autoBurn?: boolean
 }
+
+@InputType()
+export class SignedDataInputType {
+  @Field()
+  hash: string
+
+  @Field(() => [String])
+  signature: string[]
+}

@@ -6,7 +6,6 @@ import { AppFileModel } from '../File/File.Entity'
 import { globals } from '../../Utils/Globals'
 import { DocumentType } from '@typegoose/typegoose'
 import { getParsedAddress } from '../../Utils/Starknet'
-import { connectWalletToAccount } from './AccountService'
 import { AppContext } from 'Utils/Types/context'
 
 @Resolver()
@@ -114,11 +113,5 @@ export class AccountResolvers {
       state: id,
       code_challenge_method: 's256',
     })
-  }
-
-  @Authorized()
-  @Mutation(() => Account)
-  linkWallet(@Ctx() { id }: Context, @Arg('address') address: string) {
-    return connectWalletToAccount(id, getParsedAddress(address))
   }
 }
